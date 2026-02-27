@@ -1,0 +1,5 @@
+Installation:
+    pip install -r requirements.txt
+
+    or for just the crypto-sim package:
+        pip install --upgrade git+<https://github.com/fizakim/crypto-sim.git>
