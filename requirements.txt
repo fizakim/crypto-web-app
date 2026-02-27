@@ -1,1 +1,2 @@
 git+https://github.com/fizakim/crypto-sim.git
+django==6.0.2
