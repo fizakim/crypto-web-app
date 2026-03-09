@@ -1,16 +1,20 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Crypto Playground{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 
 <body>
-    <header>
-        <h1><a href="{% url 'pages:home' %}">Crypto Playground</a></h1>
-        <nav>
+    <header class="site-header">
+        <h1 class="site-title"><a href="{% url 'pages:home' %}">Crypto Playground</a></h1>
+        <nav class="main-nav">
             <ul>
                 <li><a href="{% url 'exchange:exchange' %}">Exchange</a></li>
                 <li><a href="{% url 'crypto:trading' %}">Trading</a></li>
@@ -18,25 +22,20 @@
                 <li><a href="{% url 'crypto:mining' %}">Mining</a></li>
             </ul>
         </nav>
-        <div>
-            <div>
-                <a href="{% url 'users:account_overview' %}">Wallet</a> |
-                <a href="{% url 'users:login' %}">Login</a> |
-                <a href="{% url 'users:signup' %}">Sign Up</a>
-            </div>
+        <div class="auth-nav">
+            <a href="{% url 'users:account_overview' %}">Wallet</a>
+            <span class="divider">|</span>
+            <a href="{% url 'users:login' %}">Login</a>
+            <span class="divider">|</span>
+            <a href="{% url 'users:signup' %}">Sign Up</a>
         </div>
     </header>
-    <hr>
 
-    <main>
+    <main class="site-main">
         {% block content %}
         {% endblock %}
     </main>
 
-    <hr>
-    <footer>
-        <p>Crypto Playground</p>
-    </footer>
     {% block extra_js %}{% endblock %}
 </body>
 
