@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Crypto Playground{% endblock %}</title>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <header>
+        <h1><a href="{% url 'pages:home' %}">Crypto Playground</a></h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'exchange:exchange' %}">Exchange</a></li>
+                <li><a href="{% url 'crypto:trading' %}">Trading</a></li>
+                <li><a href="{% url 'crypto:blockchain_viewer' %}">Blockchain Viewer</a></li>
+                <li><a href="{% url 'crypto:mining' %}">Mining</a></li>
+            </ul>
+        </nav>
+        <div>
+            <div>
+                <a href="{% url 'users:account_overview' %}">Wallet</a> |
+                <a href="{% url 'users:login' %}">Login</a> |
+                <a href="{% url 'users:signup' %}">Sign Up</a>
+            </div>
+        </div>
+    </header>
+    <hr>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <hr>
+    <footer>
+        <p>Crypto Playground</p>
+    </footer>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>
