@@ -23,11 +23,19 @@
             </ul>
         </nav>
         <div class="auth-nav">
+            {% if user.is_authenticated %}
+            <span class="user-greeting" style="margin-right: 15px;"><strong>{{ user.username }}</strong></span>
             <a href="{% url 'users:account_overview' %}">Wallet</a>
             <span class="divider">|</span>
+            <form action="{% url 'users:logout' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-link">Logout</button>
+            </form>
+            {% else %}
             <a href="{% url 'users:login' %}">Login</a>
             <span class="divider">|</span>
             <a href="{% url 'users:signup' %}">Sign Up</a>
+            {% endif %}
         </div>
     </header>
 

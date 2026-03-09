@@ -3,5 +3,16 @@
 {% block title %}Login - Crypto Playground{% endblock %}
 
 {% block content %}
-<h2>Login</h2>
+<div class="card auth-container">
+    <h2>Login</h2>
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary btn-full">Log
+            In</button>
+    </form>
+    <p class="auth-link">
+        Don't have an account? <a href="{% url 'users:signup' %}">Sign Up</a>
+    </p>
+</div>
 {% endblock %}
