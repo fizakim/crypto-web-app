@@ -1,25 +1,34 @@
-# Python / Django
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
+*.egg-info/
+dist/
+build/
+*.egg
 
-# Database
-db.sqlite3
+# Django
+*.sqlite3
+media/
+static/
 
-# Environments
-.env
-.venv
-env/
+# Virtual environments
 venv/
-ENV/
-env.bak/
-venv.bak/
+.venv/
+env/
 
-# Development
+# IDE
 .vscode/
 .idea/
-*.log
+*.swp
+*.swo
 
-# Windows
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+pytest.ini
+
+# OS
+.DS_Store
 Thumbs.db
-Desktop.ini
