@@ -9,7 +9,7 @@
    cd app
    python manage.py runserver
 
-## Project Structure
+## Page Structure
 
 - `app/templates/`
   - `base.html`
@@ -25,3 +25,16 @@
   - `blockchain_viewer.html`
 - `app/exchange/`
   - `exchange.html`
+
+## Database Structure
+
+- `Users`
+  - `User`
+- `Crypto`
+  - `Cryptocurrency`
+  - `Blockchain`
+  - `Block`
+  - `Transaction`
+  - `TxInput`
+  - `TxOutput`
+  - `Wallet`
