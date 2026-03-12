@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Viewer - Crypto Playground</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    
+<link rel="stylesheet" href="/static/crypto/css/crypto.css">
+
+</head>
+
+<body>
+    <header class="site-header">
+        <h1 class="site-title"><a href="/">Crypto Playground</a></h1>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="/exchange/">Exchange</a></li>
+                <li><a href="/crypto/trading/">Trading</a></li>
+                <li><a href="/crypto/blockchain/">Blockchain Viewer</a></li>
+                <li><a href="/crypto/mining/">Mining</a></li>
+            </ul>
+        </nav>
+        <div class="auth-nav">
+            
+            <a href="/users/login/">Login</a>
+            <span class="divider">|</span>
+            <a href="/users/signup/">Sign Up</a>
+            
+        </div>
+    </header>
+
+    <main class="site-main">
+        
+<div class="container">
+    <h2>Blockchain Explorer</h2>
+
+    <div class="network-selector">
+        
+        <form action="" method="get" class="network-form" id="network-form">
+            <select name="network" id="network-select" class="network-dropdown">
+                
+                <option value="CRYPTO1" selected data-name="Crypto1">
+                    Crypto1 (CRYPTO1)
+                </option>
+                
+                <option value="CRYPTO2"  data-name="Crypto2">
+                    Crypto2 (CRYPTO2)
+                </option>
+                
+            </select>
+        </form>
+        
+    </div>
+
+    
+    <div class="card" id="blocks-card">
+        <h3><span id="active-network-name">Crypto1</span> Blocks</h3>
+
+        <div class="table-container" id="blocks-table-container" >
+            <table>
+                <thead>
+                    <tr>
+                        <th>Height</th>
+                        <th>Block Hash</th>
+                        <th>Previous Hash</th>
+                        <th>Timestamp</th>
+                        <th>Nonce</th>
+                    </tr>
+                </thead>
+                <tbody id="blocks-table-body">
+                    
+                    <tr>
+                        <td>0</td>
+                        <td class="hash-cell" title="01da2014a90a01c7d70d06dbce7716416e93ecb1dc6b4b18ea33d1b2b279b710">01da2014a90a01c7d70…</td>
+                        <td class="hash-cell" title="0">0</td>
+                        <td>0</td>
+                        <td>279</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="empty-state" id="blocks-empty-state" style="display: none;">
+            <p>No blocks mined on the <span id="empty-state-network-name">Crypto1</span>.</p>
+        </div>
+    </div>
+    
+</div>
+
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+<script src="/static/crypto/js/blockchain_viewer.js"></script>
+
+</body>
+
+</html>

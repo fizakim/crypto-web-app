@@ -4,7 +4,7 @@
 {% block title %}Blockchain Viewer - Crypto Playground{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/crypto.css' %}">
+<link rel="stylesheet" href="{% static 'crypto/css/crypto.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -13,10 +13,10 @@
 
     <div class="network-selector">
         {% if cryptocurrencies %}
-        <form action="" method="get" class="network-form">
-            <select name="network" onchange="this.form.submit()" class="network-dropdown">
+        <form action="" method="get" class="network-form" id="network-form">
+            <select name="network" id="network-select" class="network-dropdown">
                 {% for crypto in cryptocurrencies %}
-                <option value="{{ crypto.symbol }}" {% if active_crypto and active_crypto.id == crypto.id %}selected{% endif %}>
+                <option value="{{ crypto.symbol }}" {% if active_crypto and active_crypto.id == crypto.id %}selected{% endif %} data-name="{{ crypto.name }}">
                     {{ crypto.name }} ({{ crypto.symbol }})
                 </option>
                 {% endfor %}
@@ -30,11 +30,10 @@
     </div>
 
     {% if active_crypto %}
-    <div class="card">
-        <h3>{{ active_crypto.name }} Blocks</h3>
+    <div class="card" id="blocks-card">
+        <h3><span id="active-network-name">{{ active_crypto.name }}</span> Blocks</h3>
 
-        {% if blocks %}
-        <div class="table-container">
+        <div class="table-container" id="blocks-table-container" {% if not blocks %}style="display: none;"{% endif %}>
             <table>
                 <thead>
                     <tr>
@@ -45,27 +44,29 @@
                         <th>Nonce</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="blocks-table-body">
                     {% for block in blocks %}
                     <tr>
-                        <td>{{ block.height }}</td>
-                        <td class="hash-cell" title="{{ block.block_hash }}">{{ block.block_hash|truncatechars:20 }}
-                        </td>
-                        <td class="hash-cell" title="{{ block.prev_block_hash }}">{{
-                            block.prev_block_hash|truncatechars:20 }}</td>
-                        <td>{{ block.timestamp|date:"Y-m-d H:i:s" }}</td>
+                        <td>{{ block.index }}</td>
+                        <td class="hash-cell" title="{{ block.block_hash }}">{{ block.block_hash|truncatechars:20 }}</td>
+                        <td class="hash-cell" title="{{ block.previous_hash }}">{{ block.previous_hash|truncatechars:20 }}</td>
+                        <td>{{ block.timestamp }}</td>
                         <td>{{ block.nonce }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-        {% else %}
-        <div class="empty-state">
-            <p>No blocks mined on the {{ active_crypto.name }}.</p>
+        
+        <div class="empty-state" id="blocks-empty-state" {% if blocks %}style="display: none;"{% endif %}>
+            <p>No blocks mined on the <span id="empty-state-network-name">{{ active_crypto.name }}</span>.</p>
         </div>
-        {% endif %}
     </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="{% static 'crypto/js/blockchain_viewer.js' %}"></script>
 {% endblock %}

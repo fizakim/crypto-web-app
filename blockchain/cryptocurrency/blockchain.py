@@ -28,6 +28,12 @@ class Blockchain:
         for tx in genesis_transactions:
             self.utxo_set.apply_transaction(tx)
 
+    def to_json(self):
+        return {
+            "difficulty": self.difficulty,
+            "chain": [block.to_json() for block in self.chain]
+        }
+
     def adjust_difficulty(self):
         latest_block = self.get_last_block()
         if latest_block.index % self.config.difficulty_adjustment_interval != 0 or latest_block.index == 0:

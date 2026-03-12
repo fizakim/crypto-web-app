@@ -28,6 +28,7 @@ class Block:
         return {
             "index": self.index,
             "timestamp": self.timestamp,
+            "block_hash": self.compute_hash(),
             "transactions": [tx.to_json() for tx in self.transactions],
             "previous_hash": self.previous_hash,
             "nonce": self.nonce,
