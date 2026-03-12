@@ -1,7 +1,71 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Blockchain Viewer - Crypto Playground{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/crypto.css' %}">
+{% endblock %}
+
 {% block content %}
-<h2>Blockchain Explorer</h2>
+<div class="container">
+    <h2>Blockchain Explorer</h2>
+
+    <div class="network-selector">
+        {% if cryptocurrencies %}
+        <form action="" method="get" class="network-form">
+            <select name="network" onchange="this.form.submit()" class="network-dropdown">
+                {% for crypto in cryptocurrencies %}
+                <option value="{{ crypto.symbol }}" {% if active_crypto and active_crypto.id == crypto.id %}selected{% endif %}>
+                    {{ crypto.name }} ({{ crypto.symbol }})
+                </option>
+                {% endfor %}
+            </select>
+        </form>
+        {% else %}
+        <div class="empty-state">
+            <p>No cryptocurrencies</p>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if active_crypto %}
+    <div class="card">
+        <h3>{{ active_crypto.name }} Blocks</h3>
+
+        {% if blocks %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Height</th>
+                        <th>Block Hash</th>
+                        <th>Previous Hash</th>
+                        <th>Timestamp</th>
+                        <th>Nonce</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for block in blocks %}
+                    <tr>
+                        <td>{{ block.height }}</td>
+                        <td class="hash-cell" title="{{ block.block_hash }}">{{ block.block_hash|truncatechars:20 }}
+                        </td>
+                        <td class="hash-cell" title="{{ block.prev_block_hash }}">{{
+                            block.prev_block_hash|truncatechars:20 }}</td>
+                        <td>{{ block.timestamp|date:"Y-m-d H:i:s" }}</td>
+                        <td>{{ block.nonce }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>No blocks mined on the {{ active_crypto.name }}.</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
 {% endblock %}
