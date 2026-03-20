@@ -21,12 +21,16 @@ class Blockchain(models.Model):
 
 class Wallet(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wallets')
+    cryptocurrency = models.ForeignKey(Cryptocurrency, on_delete=models.CASCADE, related_name='wallets')
     address = models.CharField(max_length=100, unique=True)
     private_key = models.CharField(max_length=255)
     type = models.CharField(max_length=50, default='Standard')
 
+    class Meta:
+        unique_together = ('user', 'cryptocurrency')
+
     def __str__(self):
-        return f"{self.user.username}'s Wallet ({self.address[:8]}...)"
+        return self.user.username + " " + self.cryptocurrency.symbol
 
 class Block(models.Model):
     blockchain = models.ForeignKey(Blockchain, on_delete=models.CASCADE, related_name='blocks')

@@ -5,7 +5,14 @@ class CryptoConfig(AppConfig):
     name = 'crypto'
 
     def ready(self):
-        # load configs when app starts
+        import sys
+        import crypto.signals
+        
+        if 'makemigrations' in sys.argv or 'migrate' in sys.argv:
+            return
+
         from .services import load_configs
-        print("loading crypto configs...")
-        load_configs()
+        try:
+            load_configs()
+        except:
+            pass
