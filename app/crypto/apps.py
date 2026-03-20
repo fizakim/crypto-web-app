@@ -14,5 +14,5 @@ class CryptoConfig(AppConfig):
         from .services import load_configs
         try:
             load_configs()
-        except:
+        except Exception:
             pass
