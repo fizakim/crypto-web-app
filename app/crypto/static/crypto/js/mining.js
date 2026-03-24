@@ -88,7 +88,7 @@ $(document).ready(function () {
         for (let i = 0; i < batchSize; i++) {
             if (!isMining) break;
 
-            let header = index + timestamp + previous_hash + currentNonce + difficulty + txHashes;
+            let header = String(index) + String(timestamp) + previous_hash + String(currentNonce) + String(difficulty) + txHashes;
             let hashHex = CryptoJS.SHA256(header).toString();
 
             if (i % 10 === 0) {
