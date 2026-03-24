@@ -2,6 +2,7 @@ $(document).ready(function () {
     let isMining = false;
     let currentBlockTemplate = null;
     let currentNonce = 0;
+    let blocksMinedSession = 0;
 
     let btnStart = $('#btn-start-mining');
     let networkSelect = $('#network-select');
@@ -9,6 +10,9 @@ $(document).ready(function () {
     let liveNonce = $('#live-nonce');
     let hashOutput = $('#hash-output');
     let miningStatus = $('#mining-status');
+    let blocksMinedDisplay = $('#blocks-mined');
+    let lastNonceDisplay = $('#last-nonce-mined');
+    let lastHashDisplay = $('#last-hash-mined');
 
     btnStart.on('click', function () {
         if (isMining) {
@@ -22,17 +26,34 @@ $(document).ready(function () {
             return;
         }
 
-        btnStart.text('START MINING');
-        btnStart.prop('disabled', true);
-        miningStatus.text('Connecting to node...');
+        isMining = true;
+        btnStart.text('STOP MINING');
+        btnStart.prop('disabled', false);
+        blocksMinedSession = 0;
+        currentBlockTemplate = null;
+        if (blocksMinedDisplay.length) blocksMinedDisplay.text(blocksMinedSession);
+        if (lastNonceDisplay.length) lastNonceDisplay.text('--');
+        if (lastHashDisplay.length) lastHashDisplay.text('--');
+        
+        fetchTemplateAndMine();
+    });
 
+    function fetchTemplateAndMine() {
+        if (!isMining) return;
+        
+        let network = networkSelect.val();
+        if (!currentBlockTemplate) {
+            miningStatus.text('Connecting...');
+        }
+        
         $.ajax({
             url: '/crypto/api/mine/template/',
             data: { network: network },
             method: 'GET',
             success: function (data) {
+                if (!isMining) return;
                 currentBlockTemplate = data;
-                startMining();
+                startMiningLoop();
             },
             error: function (xhr) {
                 let data = xhr.responseJSON || {};
@@ -40,29 +61,23 @@ $(document).ready(function () {
                 if (data.error === 'Login required') {
                     window.location.href = '/users/login/';
                 }
-                btnStart.text('START MINING');
-                btnStart.prop('disabled', false);
-                miningStatus.text('');
+                stopMining();
             }
         });
-    });
+    }
 
-    function startMining() {
-        isMining = true;
-        btnStart.text('STOP MINING');
-        btnStart.prop('disabled', false);
-        miningStatus.text('Mining in progress...');
+    function startMiningLoop() {
+        miningStatus.text('Mining...');
         difficultyDisplay.text(currentBlockTemplate.difficulty);
-
         currentNonce = currentBlockTemplate.nonce || 0;
-
         setTimeout(mineStep, 0);
     }
 
     function stopMining() {
         isMining = false;
         btnStart.text('START MINING');
-        miningStatus.text('Mining stopped.');
+        btnStart.prop('disabled', false);
+        miningStatus.text('Stopped');
     }
 
     function mineStep() {
@@ -97,14 +112,14 @@ $(document).ready(function () {
             }
 
             if (hashHex.substring(0, zeroCount) === targetZeros) {
-                isMining = false;
                 liveNonce.text(currentNonce);
                 hashOutput.text(hashHex);
-                miningStatus.text('Block found! Submitting...');
-                btnStart.prop('disabled', true);
-
+                if (lastNonceDisplay.length) lastNonceDisplay.text(currentNonce);
+                if (lastHashDisplay.length) lastHashDisplay.text(hashHex);
+                
                 currentBlockTemplate.nonce = currentNonce;
                 submitBlock(currentBlockTemplate);
+                fetchTemplateAndMine();
                 return;
             }
 
@@ -131,17 +146,14 @@ $(document).ready(function () {
             }),
             success: function (result) {
                 if (result.status === 'success') {
-                    miningStatus.text('Block successfully mined');
+                    blocksMinedSession++;
+                    if (blocksMinedDisplay.length) blocksMinedDisplay.text(blocksMinedSession);
                 } else {
-                    miningStatus.text('Submission failed.');
+                    console.warn('Block submission returned non-success, continuing mining...');
                 }
-                btnStart.text('START MINING');
-                btnStart.prop('disabled', false);
             },
             error: function () {
-                miningStatus.text('Network error during submission.');
-                btnStart.text('START MINING');
-                btnStart.prop('disabled', false);
+                console.warn('Network error during block submission, continuing mining...');
             }
         });
     }
@@ -160,4 +172,6 @@ $(document).ready(function () {
         }
         return cookieValue;
     }
+
+    miningStatus.text('Ready to mine');
 });
