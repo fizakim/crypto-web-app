@@ -35,19 +35,6 @@ class Blockchain:
         }
 
     def adjust_difficulty(self):
-        latest_block = self.get_last_block()
-        if latest_block.index % self.config.difficulty_adjustment_interval != 0 or latest_block.index == 0:
-            return self.difficulty
-            
-        prev_adjustment_block = self.chain[-self.config.difficulty_adjustment_interval]
-        time_expected = self.config.block_generation_interval * self.config.difficulty_adjustment_interval
-        time_taken = latest_block.timestamp - prev_adjustment_block.timestamp
-        
-        if time_taken < time_expected / 2:
-            self.difficulty += 1
-        elif time_taken > time_expected * 2:
-            self.difficulty = max(1, self.difficulty - 1)
-            
         return self.difficulty
 
     def get_last_block(self):
@@ -83,7 +70,7 @@ class Blockchain:
 
         last_block = self.get_last_block()
         
-        self.adjust_difficulty()
+        # self.adjust_difficulty()
         
         new_block = Block(
             index=last_block.index + 1,
