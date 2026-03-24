@@ -124,5 +124,5 @@ STATICFILES_DIRS = [
 ]
 
 # Auth routing
-LOGIN_REDIRECT_URL = 'users:account_overview'
+LOGIN_REDIRECT_URL = 'pages:home'
 LOGOUT_REDIRECT_URL = 'pages:home'

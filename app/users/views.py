@@ -9,5 +9,3 @@ class SignUpView(CreateView):
     success_url = reverse_lazy('users:login')
     template_name = 'users/signup.html'
 
-class AccountOverviewView(LoginRequiredMixin, TemplateView):
-    template_name = 'users/account_overview.html'
