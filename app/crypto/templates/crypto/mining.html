@@ -1,7 +1,82 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Mining Dashboard - Crypto Playground{% endblock %}
+{% block title %}Mining{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'crypto/css/crypto.css' %}">
+<link rel="stylesheet" href="{% static 'crypto/css/mining.css' %}">
+{% endblock %}
 
 {% block content %}
-<h2>Mining Operations</h2>
+<div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+        <h2 style="margin-bottom: 0;">Mining Operations</h2>
+        <div class="network-selector" style="margin-bottom: 0;">
+            {% if cryptocurrencies %}
+            <form action="" method="get" class="network-form" id="network-form">
+                <select name="network" id="network-select" class="network-dropdown">
+                    {% for crypto in cryptocurrencies %}
+                    <option value="{{ crypto.symbol }}" {% if active_crypto and active_crypto.id == crypto.id %}selected{% endif %} data-name="{{ crypto.name }}">
+                        {{ crypto.name }} ({{ crypto.symbol }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </form>
+            {% else %}
+            <select class="network-dropdown">
+                <option>Select Cryptocurrency</option>
+            </select>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mining-grid">
+        <!-- Left Column -->
+        <div class="card mining-card">
+            <div class="mining-card-content">
+                <div class="mining-stats">
+                    <h3>BLOCK STATS</h3>
+                    <p style="margin-bottom: 5px;">Difficulty</p>
+                    <p id="mining-difficulty" style="font-size: 2rem; font-weight: bold; color: var(--accent-color);">--
+                    </p>
+                </div>
+            </div>
+            <button class="btn btn-start-mining" id="btn-start-mining">START MINING</button>
+        </div>
+
+        <!-- Right Column -->
+        <div class="card mining-card">
+            <div class="mining-card-content">
+                <h3
+                    style="color: var(--text-muted); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: var(--spacing-lg);">
+                    When Mining:</h3>
+                <p>Live nonce: <span id="live-nonce" style="font-weight: bold; color: var(--accent-color);">0</span></p>
+                <div style="margin-top: var(--spacing-md); width: 100%;">
+                    <p>Nonce output:</p>
+                    <p id="hash-output" style="
+                        font-family: monospace; 
+                        word-break: break-all; 
+                        background: var(--bg-color-main); 
+                        padding: var(--spacing-sm); 
+                        border-radius: var(--border-radius);
+                        border: 1px solid var(--border-color);
+                        color: var(--text-muted);
+                        height: 80px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    ">Awaiting start...</p>
+                </div>
+                <p id="mining-status" style="margin-top: var(--spacing-lg); color: var(--text-muted);"></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script src="{% static 'crypto/js/mining.js' %}"></script>
 {% endblock %}

@@ -39,6 +39,7 @@ class Block(models.Model):
     prev_block_hash = models.CharField(max_length=64)
     timestamp = models.DateTimeField(auto_now_add=True)
     nonce = models.IntegerField(default=0)
+    block_data = models.JSONField(blank=True, null=True)
 
     def __str__(self):
         return f"Block {self.height} - {self.block_hash[:8]}..."

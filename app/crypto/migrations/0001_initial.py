@@ -41,6 +41,7 @@ class Migration(migrations.Migration):
                 ('prev_block_hash', models.CharField(max_length=64)),
                 ('timestamp', models.DateTimeField(auto_now_add=True)),
                 ('nonce', models.IntegerField(default=0)),
+                ('block_data', models.JSONField(blank=True, null=True)),
                 ('blockchain', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='blocks', to='crypto.blockchain')),
             ],
         ),

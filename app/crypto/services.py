@@ -12,6 +12,7 @@ from blockchain.cryptocurrency.config import NetworkConfig
 from .models import Cryptocurrency
 from .models import Blockchain as BlockchainModel
 from .models import Block as BlockModel
+from blockchain.cryptocurrency.block import Block
 
 blockchains = {}
 
@@ -93,6 +94,31 @@ def load_configs():
 
 def start_mining_operation(user, node_address):
     pass
+
+def submit_mined_block(symbol, block_data):
+    blockchain_mem = get_blockchain(symbol)
+        
+    block = Block.from_json(block_data)
+    blockchain_mem.submit_block(block)
+    
+    crypto = Cryptocurrency.objects.get(symbol=symbol)
+    blockchain_record = BlockchainModel.objects.get(network=crypto)
+    
+    # Save to database (student style, no transaction.atomic)
+    BlockModel.objects.create(
+        blockchain=blockchain_record,
+        block_hash=block.compute_hash(),
+        height=block.index,
+        prev_block_hash=block.previous_hash,
+        nonce=block.nonce,
+        block_data=block_data
+    )
+    
+    blockchain_record.tip_hash = block.compute_hash()
+    blockchain_record.height = block.index
+    blockchain_record.save()
+        
+    return True
 
 
 def get_mempool_transactions():
