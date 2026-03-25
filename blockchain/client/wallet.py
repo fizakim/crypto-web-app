@@ -1,8 +1,8 @@
 import ecdsa
 import hashlib
 
-from cryptocurrency.utils import sha256_hash, base58_encode
-from cryptocurrency.config import NetworkConfig
+from blockchain.cryptocurrency.utils import sha256_hash, base58_encode
+from blockchain.cryptocurrency.config import NetworkConfig
 
 
 class Wallet:

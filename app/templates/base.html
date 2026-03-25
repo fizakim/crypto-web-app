@@ -6,22 +6,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Crypto Playground{% endblock %}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 
 <body>
     <header class="site-header">
+
         <h1 class="site-title"><a href="{% url 'pages:home' %}">Crypto Playground</a></h1>
+
         <nav class="main-nav">
-            <ul>
-                <li><a href="{% url 'exchange:exchange' %}">Exchange</a></li>
-                <li><a href="{% url 'crypto:trading' %}">Trading</a></li>
-                <li><a href="{% url 'crypto:blockchain_viewer' %}">Blockchain Viewer</a></li>
-                <li><a href="{% url 'crypto:mining' %}">Mining</a></li>
-            </ul>
+            <a href="{% url 'exchange:exchange' %}">Exchange</a></li>
+            <a href="{% url 'crypto:trading' %}">Trading</a>
+            <a href="{% url 'crypto:blockchain_viewer' %}">Blockchain</a>
+            <a href="{% url 'crypto:mining' %}">Mining</a>
         </nav>
+
         <div class="auth-nav">
             {% if user.is_authenticated %}
             <span class="user-balance" style="margin-right: 15px;">
@@ -36,9 +36,10 @@
             {% else %}
             <a href="{% url 'users:login' %}">Login</a>
             <span class="divider">|</span>
-            <a href="{% url 'users:signup' %}">Sign Up</a>
+            <a href="{% url 'users:signup' %}">Sign up</a>
             {% endif %}
         </div>
+
     </header>
 
     <main class="site-main">
