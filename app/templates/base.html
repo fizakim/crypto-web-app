@@ -25,6 +25,9 @@
 
         <div class="auth-nav">
             {% if user.is_authenticated %}
+            <span class="user-balance" style="margin-right: 15px;">
+                Balance: £{{user.profile.balance|default:"0.00"|floatformat:2 }}</span>
+            <span class="divider">|</span>
             <span class="user-greeting" style="margin-right: 15px;"><strong>{{ user.username }}</strong></span>
             <span class="divider">|</span>
             <form action="{% url 'users:logout' %}" method="post" style="display: inline;">
