@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 class Cryptocurrency(models.Model):
     name = models.CharField(max_length=50)
@@ -12,6 +13,21 @@ class Cryptocurrency(models.Model):
 
     def __str__(self):
         return self.name
+
+class PriceHistory(models.Model):
+    cryptocurrency = models.ForeignKey(
+        Cryptocurrency,
+        on_delete=models.CASCADE,
+        related_name='price_history'
+    )
+    price = models.DecimalField(max_digits=20, decimal_places=8)
+    recorded_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        ordering = ['recorded_at']
+
+    def __str__(self):
+        return f"{self.cryptocurrency.symbol} @ {self.price} on {self.recorded_at}"
 
 class Blockchain(models.Model):
     network = models.ForeignKey(Cryptocurrency, on_delete=models.CASCADE)
@@ -37,11 +53,14 @@ class Wallet(models.Model):
 class Block(models.Model):
     blockchain = models.ForeignKey(Blockchain, on_delete=models.CASCADE, related_name='blocks')
     block_hash = models.CharField(max_length=64, primary_key=True)
-    height = models.IntegerField()
+    height = models.IntegerField(db_index=True)
     prev_block_hash = models.CharField(max_length=64)
     timestamp = models.DateTimeField(auto_now_add=True)
     nonce = models.IntegerField(default=0)
     block_data = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['height']
 
     def __str__(self):
         return f"Block {self.height} - {self.block_hash[:8]}..."
@@ -77,7 +96,13 @@ class TxOutput(models.Model):
     value = models.DecimalField(max_digits=20, decimal_places=8)
     script_pubkey = models.CharField(max_length=255)
     is_spent = models.BooleanField(default=False)
-    spent_by_input = models.ForeignKey(TxInput, on_delete=models.SET_NULL, null=True, blank=True, related_name='spent_output')
+    spent_by_input = models.ForeignKey(
+        TxInput,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='spent_output'
+    )
 
     def __str__(self):
         return f"Out: {self.value} to {self.script_pubkey[:8]}"

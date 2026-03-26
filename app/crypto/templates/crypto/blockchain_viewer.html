@@ -9,64 +9,154 @@
 
 {% block content %}
 <div class="container">
-    <h2>Blockchain Explorer</h2>
+    <div class="explorer-header-row">
+        <h2>Blockchain Explorer</h2>
 
-    <div class="network-selector">
-        {% if cryptocurrencies %}
-        <form action="" method="get" class="network-form" id="network-form">
-            <select name="network" id="network-select" class="network-dropdown">
-                {% for crypto in cryptocurrencies %}
-                <option value="{{ crypto.symbol }}" {% if active_crypto and active_crypto.id == crypto.id %}selected{% endif %} data-name="{{ crypto.name }}">
-                    {{ crypto.name }} ({{ crypto.symbol }})
-                </option>
-                {% endfor %}
-            </select>
-        </form>
-        {% else %}
-        <div class="empty-state">
-            <p>No cryptocurrencies</p>
+        <div class="network-selector">
+            {% if cryptocurrencies %}
+            <form action="" method="get" class="network-form" id="network-form">
+                <select name="network" id="network-select" class="network-dropdown">
+                    {% for crypto in cryptocurrencies %}
+                    <option value="{{ crypto.symbol }}" {% if active_crypto and active_crypto.id == crypto.id %}selected{% endif %}>
+                        {{ crypto.name }} ({{ crypto.symbol }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </form>
+            {% else %}
+            <div class="empty-state">
+                <p>No cryptocurrencies</p>
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
 
     {% if active_crypto %}
-    <div class="card" id="blocks-card">
-        <h3><span id="active-network-name">{{ active_crypto.name }}</span> Blocks</h3>
+    <div class="explorer-grid">
+        <section class="card explorer-panel">
+            <div class="panel-heading">
+                <h3>Price History</h3>
+                <p>{{ active_crypto.name }} market price</p>
+            </div>
+            <div class="chart-shell">
+                <canvas id="priceHistoryChart"></canvas>
+            </div>
+        </section>
 
-        <div class="table-container" id="blocks-table-container" {% if not blocks %}style="display: none;"{% endif %}>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Height</th>
-                        <th>Block Hash</th>
-                        <th>Previous Hash</th>
-                        <th>Timestamp</th>
-                        <th>Nonce</th>
-                    </tr>
-                </thead>
-                <tbody id="blocks-table-body">
-                    {% for block in blocks %}
-                    <tr>
-                        <td>{{ block.index }}</td>
-                        <td class="hash-cell" title="{{ block.block_hash }}">{{ block.block_hash|truncatechars:20 }}</td>
-                        <td class="hash-cell" title="{{ block.previous_hash }}">{{ block.previous_hash|truncatechars:20 }}</td>
-                        <td>{{ block.timestamp }}</td>
-                        <td>{{ block.nonce }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="empty-state" id="blocks-empty-state" {% if blocks %}style="display: none;"{% endif %}>
-            <p>No blocks mined on the <span id="empty-state-network-name">{{ active_crypto.name }}</span>.</p>
-        </div>
+        <section class="card explorer-panel">
+            <div class="panel-heading">
+                <h3>Network Stats</h3>
+                <p>{{ active_crypto.name }} live overview</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">Symbol</span>
+                    <span class="stat-value">{{ stats.symbol }}</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Height</span>
+                    <span class="stat-value">{{ stats.height }}</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Difficulty</span>
+                    <span class="stat-value">{{ stats.difficulty }}</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Reward</span>
+                    <span class="stat-value">{{ stats.reward }}</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Price</span>
+                    <span class="stat-value">£{{ stats.price|floatformat:2 }}</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">UTXO Count</span>
+                    <span class="stat-value">{{ stats.utxo_count }}</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Total Blocks</span>
+                    <span class="stat-value">{{ stats.total_blocks }}</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Transactions</span>
+                    <span class="stat-value">{{ stats.total_transactions }}</span>
+                </div>
+                <div class="stat-card stat-card-wide">
+                    <span class="stat-label">Latest Hash</span>
+                    <span class="stat-value hash-value">
+                        {% if stats.latest_hash %}
+                            {{ stats.latest_hash }}
+                        {% else %}
+                            No blocks yet
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </section>
     </div>
+
+    <section class="card explorer-panel blocks-panel">
+        <div class="panel-heading">
+            <h3>Recent Blocks</h3>
+            <p>{{ active_crypto.name }} persisted chain data</p>
+        </div>
+
+        {% if recent_blocks %}
+        <div class="blocks-strip">
+            {% for block in recent_blocks %}
+                {% if not forloop.first %}
+                <div class="block-arrow">→</div>
+                {% endif %}
+
+                <article class="block-card">
+                    <div class="block-card-title">Block #{{ block.index }}</div>
+
+                    <div class="block-row">
+                        <span class="block-label">Nonce</span>
+                        <span class="block-value">{{ block.nonce }}</span>
+                    </div>
+
+                    <div class="block-row">
+                        <span class="block-label">Difficulty</span>
+                        <span class="block-value">{{ block.difficulty }}</span>
+                    </div>
+
+                    <div class="block-row">
+                        <span class="block-label">Transactions</span>
+                        <span class="block-value">{{ block.tx_count }}</span>
+                    </div>
+
+                    <div class="block-row">
+                        <span class="block-label">Timestamp</span>
+                        <span class="block-value">{{ block.timestamp }}</span>
+                    </div>
+
+                    <div class="block-hash-group">
+                        <span class="block-label">Hash</span>
+                        <span class="block-hash">{{ block.block_hash|truncatechars:28 }}</span>
+                    </div>
+
+                    <div class="block-hash-group">
+                        <span class="block-label">Prev</span>
+                        <span class="block-hash">{{ block.previous_hash|truncatechars:28 }}</span>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>No persisted blocks exist yet for {{ active_crypto.name }}.</p>
+        </div>
+        {% endif %}
+    </section>
     {% endif %}
 </div>
+
+{{ price_chart_labels|json_script:"price-chart-labels-data" }}
+{{ price_chart_values|json_script:"price-chart-values-data" }}
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="{% static 'crypto/js/blockchain_viewer.js' %}"></script>
 {% endblock %}

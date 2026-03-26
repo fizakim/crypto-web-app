@@ -13,11 +13,10 @@
 
 <body>
     <header class="site-header">
-
         <h1 class="site-title"><a href="{% url 'pages:home' %}">Crypto Playground</a></h1>
 
         <nav class="main-nav">
-            <a href="{% url 'exchange:exchange' %}">Exchange</a></li>
+            <a href="{% url 'exchange:exchange' %}">Exchange</a>
             <a href="{% url 'crypto:trading' %}">Trading</a>
             <a href="{% url 'crypto:blockchain_viewer' %}">Blockchain</a>
             <a href="{% url 'crypto:mining' %}">Mining</a>
@@ -25,12 +24,11 @@
 
         <div class="auth-nav">
             {% if user.is_authenticated %}
-            <span class="user-balance" style="margin-right: 15px;">
-                Balance: £{{user.profile.balance|default:"0.00"|floatformat:2 }}</span>
+            <span class="user-balance">Balance: £{{ user.profile.balance|default:"0.00"|floatformat:2 }}</span>
             <span class="divider">|</span>
-            <span class="user-greeting" style="margin-right: 15px;"><strong>{{ user.username }}</strong></span>
+            <span class="user-greeting"><strong>{{ user.username }}</strong></span>
             <span class="divider">|</span>
-            <form action="{% url 'users:logout' %}" method="post" style="display: inline;">
+            <form action="{% url 'users:logout' %}" method="post" class="logout-inline-form">
                 {% csrf_token %}
                 <button type="submit" class="btn-link">Logout</button>
             </form>
@@ -40,7 +38,6 @@
             <a href="{% url 'users:signup' %}">Sign up</a>
             {% endif %}
         </div>
-
     </header>
 
     <main class="site-main">
