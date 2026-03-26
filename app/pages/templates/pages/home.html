@@ -1,20 +1,120 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends "base.html" %}
 
-
-{% block extra_css %}
-{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block content %}
-    <div class="cryptoChart">
-        <script src="{% static 'js/cryptoChart.js' %}"></script>
+<div class="page">
+    <div class="dashboard-grid">
+        <div class="panel">
+            <h2>Largest Holdings:</h2>
+            <ul class="rank-list">
+                {% for holding in largest_holdings %}
+                    <li>{{ holding.symbol }} "{{ holding.amount }}"</li>
+                {% empty %}
+                    <li>No portfolio data yet</li>
+                {% endfor %}
+            </ul>
+
+            <div style="margin: 20px 0; display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="?period=24h" class="btn">24h</a>
+                <a href="?period=7d" class="btn">7d</a>
+                <a href="?period=30d" class="btn">30d</a>
+            </div>
+
+            <h2>Smallest Holdings:</h2>
+            <ul class="rank-list">
+                {% for holding in smallest_holdings %}
+                    <li>{{ holding.symbol }} "{{ holding.amount }}"</li>
+                {% empty %}
+                    <li>No portfolio data yet</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="center-column">
+            <div class="wallet-circle">
+                <h1>£{{ wallet_value }}</h1>
+                <p>Wallet Value</p>
+                <p>
+                    {% if wallet_change_percent >= 0 %}+{% endif %}{{ wallet_change_percent }}% in past {{ selected_period }}
+                </p>
+            </div>
+
+            <div class="panel" style="width: 100%; text-align: center;">
+                <h2>Investment earnings:</h2>
+                <p style="margin: 14px 0;">£{{ investment_earnings }} over {{ selected_period }}</p>
+
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <a href="?period=24h" class="btn">24h</a>
+                    <a href="?period=7d" class="btn">7d</a>
+                    <a href="?period=30d" class="btn">30d</a>
+                </div>
+            </div>
+
+            <div class="small-actions">
+                <a href="{% url 'users:account_overview' %}" class="btn">Account overview</a>
+                <a href="{% url 'exchange:exchange' %}" class="btn">To exchange page</a>
+                <a href="{% url 'users:logout' %}" class="btn">Sign out</a>
+            </div>
+        </div>
+
+        <div>
+            <div class="graph-box">
+                <canvas id="walletChart"></canvas>
+            </div>
+            <div class="slider-box">
+                <p>Showing {{ selected_period }} wallet data</p>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div class="cryptoStats">
+{{ chart_labels|json_script:"chart-labels" }}
+{{ chart_values|json_script:"chart-values" }}
 
-    </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const labels = JSON.parse(document.getElementById('chart-labels').textContent);
+    const values = JSON.parse(document.getElementById('chart-values').textContent);
+    const ctx = document.getElementById('walletChart').getContext('2d');
 
-    <div class="Wallet Spread">
-
-    </div>
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Wallet Value',
+                data: values,
+                borderColor: '#f5f5f5',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                borderWidth: 2,
+                tension: 0.3,
+                fill: true,
+                pointRadius: 3,
+                pointBackgroundColor: '#f5f5f5'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#f5f5f5'
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#cfcfcf' },
+                    grid: { color: '#222' }
+                },
+                y: {
+                    ticks: { color: '#cfcfcf' },
+                    grid: { color: '#222' }
+                }
+            }
+        }
+    });
+</script>
 {% endblock %}

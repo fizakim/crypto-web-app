@@ -1,8 +1,12 @@
+import time
 import ecdsa
 import hashlib
 
 from blockchain.cryptocurrency.utils import sha256_hash, base58_encode
 from blockchain.cryptocurrency.config import NetworkConfig
+from blockchain.cryptocurrency.transaction import Transaction
+from blockchain.cryptocurrency.tx_input import TxInput
+from blockchain.cryptocurrency.tx_output import TxOutput
 
 
 class Wallet:
@@ -41,26 +45,20 @@ class Wallet:
             return False
 
     def create_transaction(self, recipient_address, amount, available_utxos):
-        from cryptocurrency.transaction import Transaction
-        from cryptocurrency.tx_input import TxInput
-        from cryptocurrency.tx_output import TxOutput
-        from cryptocurrency.utils import sha256_hash
-        import time
-
         inputs = []
         input_sum = 0
-        
+
         for tx_hash, out_idx, utxo_amount in available_utxos:
             inputs.append(TxInput(tx_hash, out_idx))
             input_sum += utxo_amount
             if input_sum >= amount:
                 break
-                
+
         if input_sum < amount:
             raise ValueError(f"Insufficient funds: have {input_sum}, need {amount}")
 
         outputs = [TxOutput(recipient_address, amount)]
-        
+
         if input_sum > amount:
             outputs.append(TxOutput(self.get_address(), input_sum - amount))
 

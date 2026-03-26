@@ -1,17 +1,233 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
     <title>{% block title %}Crypto Playground{% endblock %}</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0"></script>
     <link rel="stylesheet" href="{% static 'css/baseStyle.css' %}">
     {% block extra_css %}{% endblock %}
-</head>
+=======
+    <title>{% block title %}Mock Exchange{% endblock %}</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
 
+        body {
+            background: #050505;
+            color: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .page {
+            min-height: 100vh;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .auth-wrapper {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .auth-card {
+            width: 360px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
+        .graph-box {
+    border: 1px solid #cfcfcf;
+    border-radius: 36px;
+    min-height: 340px;
+    height: 340px;
+    padding: 24px;
+    position: relative;
+}
+
+.graph-box canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+        .profile-circle {
+            width: 130px;
+            height: 130px;
+            border: 2px solid #cfcfcf;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #cfcfcf;
+            font-size: 14px;
+            padding: 20px;
+        }
+
+        .form-group {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 16px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid #cfcfcf;
+            color: white;
+            outline: none;
+        }
+
+        .row-buttons {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .btn {
+            border: 1px solid #cfcfcf;
+            padding: 12px 20px;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.2s ease;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: #111;
+        }
+
+        .btn.full {
+            width: 100%;
+        }
+
+        .message {
+            width: 100%;
+            border: 1px solid #aa4444;
+            color: #ffb3b3;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .help-text {
+            width: 100%;
+            color: #bdbdbd;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr 1.2fr;
+            gap: 32px;
+            align-items: start;
+            margin-top: 30px;
+        }
+
+        .panel {
+            border: 1px solid #cfcfcf;
+            padding: 24px;
+            background: transparent;
+        }
+
+        .wallet-circle {
+            width: 290px;
+            height: 290px;
+            border: 2px solid #cfcfcf;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 24px auto;
+            text-align: center;
+        }
+
+        .wallet-circle h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .wallet-circle p {
+            color: #bdbdbd;
+        }
+
+        .center-column {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .graph-box {
+            border: 1px solid #cfcfcf;
+            border-radius: 36px;
+            min-height: 340px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #bdbdbd;
+            text-align: center;
+            padding: 24px;
+        }
+
+        .slider-box {
+            margin-top: 18px;
+            border: 1px solid #cfcfcf;
+            padding: 10px 16px;
+            text-align: center;
+        }
+
+        ul.rank-list {
+            margin-top: 14px;
+            padding-left: 20px;
+            line-height: 1.9;
+        }
+
+        .small-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            align-items: center;
+        }
+
+        @media (max-width: 1100px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .wallet-circle {
+                width: 240px;
+                height: 240px;
+            }
+        }
+    </style>
+>>>>>>> homepage-auth-updates
+</head>
 <body>
+<<<<<<< HEAD
     <header class="site-header">
 
         <h1 class="site-title"><a href="{% url 'pages:home' %}">Crypto Playground</a></h1>
@@ -49,6 +265,8 @@
     </main>
 
     {% block extra_js %}{% endblock %}
+=======
+    {% block content %}{% endblock %}
+>>>>>>> homepage-auth-updates
 </body>
-
 </html>

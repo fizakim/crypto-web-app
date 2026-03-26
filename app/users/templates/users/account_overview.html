@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Account Overview{% endblock %}
+
+{% block content %}
+<div class="page">
+    <div class="dashboard-grid">
+        <div class="panel">
+            <h2>Account Details</h2>
+            <ul class="rank-list">
+                <li>Username "{{ request.user.username }}"</li>
+                <li>Email "{{ request.user.email }}"</li>
+                <li>Cash Balance "£{{ profile.balance }}"</li>
+            </ul>
+        </div>
+
+        <div class="center-column">
+            <div class="wallet-circle">
+                <h1>£{{ wallet_value }}</h1>
+                <p>Wallet Value</p>
+                <p>Portfolio: £{{ portfolio_value }}</p>
+            </div>
+
+            <div class="panel" style="width: 100%; text-align: center;">
+                <h2>Portfolio Holdings</h2>
+
+                {% if holdings %}
+                    <ul class="rank-list" style="text-align: left;">
+                        {% for holding in holdings %}
+                            <li>{{ holding.symbol }} "{{ holding.amount }}"</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p style="margin-top: 14px;">No holdings yet.</p>
+                {% endif %}
+            </div>
+
+            <div class="small-actions">
+                <a href="{% url 'pages:home' %}" class="btn">Back to home</a>
+                <a href="{% url 'exchange:exchange' %}" class="btn">To exchange page</a>
+                <a href="{% url 'users:logout' %}" class="btn">Sign out</a>
+            </div>
+        </div>
+
+        <div>
+            <div class="panel" style="min-height: 340px;">
+                <h2 style="margin-bottom: 18px;">Recent Wallet Snapshots</h2>
+
+                {% if snapshots %}
+                    <ul class="rank-list">
+                        {% for snapshot in snapshots %}
+                            <li>{{ snapshot.period_label }} "£{{ snapshot.total_value }}"</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No wallet history yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

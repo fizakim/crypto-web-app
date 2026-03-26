@@ -1,23 +1,55 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends "base.html" %}
 
-{% block title %}Sign Up - Crypto Playground{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/userStyle.css' %}">{% endblock %}
+{% block title %}Sign Up{% endblock %}
 
 {% block content %}
-<div class="card auth-container">
-    <img src="{% static 'media/wallet.png' %}" alt="wallet">
-    <h2>Create a Wallet</h2>
-    <form method="post" class="auth-form">
-        {% csrf_token %}
-        <p>
-            <input type="text" name="username" placeholder='Username (Max 100)' maxlength="100" required id="id_username">
-        </p>
-        <p><input type="password" name="password" placeholder="Password" id="id_password"></p>
-        <button type="submit">Sign Up</button>
-    </form>
-    <p class="auth-link">
-        Already have an account? <a href="{% url 'users:login' %}">Log In</a>
-    </p>
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="profile-circle">Create Account</div>
+
+        <form method="post" class="auth-card">
+            {% csrf_token %}
+
+            {% if form.errors %}
+                <div class="message">
+                    Please fix the errors below.
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">Username:</label>
+                {{ form.username }}
+            </div>
+
+            <div class="help-text">{{ form.username.errors }}</div>
+
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">Email:</label>
+                {{ form.email }}
+            </div>
+
+            <div class="help-text">{{ form.email.errors }}</div>
+
+            <div class="form-group">
+                <label for="{{ form.password1.id_for_label }}">Password:</label>
+                {{ form.password1 }}
+            </div>
+
+            <div class="help-text">
+                {{ form.password1.help_text }}
+                {{ form.password1.errors }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password2.id_for_label }}">Confirm Password:</label>
+                {{ form.password2 }}
+            </div>
+
+            <div class="help-text">{{ form.password2.errors }}</div>
+
+            <button type="submit" class="btn full">Create Account</button>
+            <a href="{% url 'users:login' %}" class="btn full">Back to Login</a>
+        </form>
+    </div>
 </div>
 {% endblock %}
