@@ -36,8 +36,4 @@ html, body {
     font-size: 20px;
 }
 
-/* Main block */
-.site-main {
-    display: flex;
-    background: #303030;
-}
+
