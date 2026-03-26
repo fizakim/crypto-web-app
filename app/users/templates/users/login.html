@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}Login - Crypto Playground{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/loginStyle.css' %}">{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/userStyle.css' %}">{% endblock %}
 
 {% block content %}
 <div class="card auth-container">
@@ -10,12 +10,8 @@
     <h2>Login</h2>
     <form method="post" class="auth-form">
         {% csrf_token %}
-        <p>
-            <input type="text" name="username" placeholder='Username' maxlength="100" required id="id_username">
-        </p>
-        <p>
-            <input type="password" name="password" placeholder="Password" id="id_password">
-        </p>
+        <p><input type="text" name="username" placeholder='Username' maxlength="100" required id="id_username"></p>
+        <p><input type="password" name="password" placeholder="Password" id="id_password"></p>
         <button type="submit">Log In</button>
     </form>
     <p class="auth-link">
