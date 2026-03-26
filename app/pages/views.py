@@ -6,7 +6,7 @@ from django.shortcuts import render
 def home(request):
     selected_period = request.GET.get('period', '7d')
 
-    profile = request.user.userprofile
+    profile = request.user.profile
     holdings = request.user.holdings.all()
 
     if selected_period == '24h':
