@@ -1,10 +1,20 @@
 {% extends 'base.html' %}
-
+{% load static %}
 
 
 {% block extra_css %}
 {% endblock %}
 
 {% block content %}
+    <div class="cryptoChart">
+        <script src="{% static 'js/cryptoChart.js' %}"></script>
+    </div>
 
+    <div class="cryptoStats">
+
+    </div>
+
+    <div class="Wallet Spread">
+
+    </div>
 {% endblock %}
