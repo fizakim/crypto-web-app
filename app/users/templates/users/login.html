@@ -1,15 +1,22 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Login - Crypto Playground{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/loginStyle.css' %}">{% endblock %}
 
 {% block content %}
 <div class="card auth-container">
+    <img src="{% static 'media/user.png' %}" alt="generic user">
     <h2>Login</h2>
     <form method="post" class="auth-form">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary btn-full">Log
-            In</button>
+        <p>
+            <input type="text" name="username" placeholder='Username' maxlength="100" required id="id_username">
+        </p>
+        <p>
+            <input type="password" name="password" placeholder="Password" id="id_password">
+        </p>
+        <button type="submit">Log In</button>
     </form>
     <p class="auth-link">
         Don't have an account? <a href="{% url 'users:signup' %}">Sign Up</a>
