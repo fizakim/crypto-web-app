@@ -2,21 +2,463 @@
 
 {% block title %}Exchange - Crypto Playground{% endblock %}
 
-{% block content %}
-    <h2>Crypto Exchange</h2>
-    <div class="cryptoChart">
-
-    </div>
-
-    <div class="buySellStats">
-
-    </div>
-
-    <div class="walletSpread">
-
-    </div>
-
-    <div class="buySellBox">
-
-    </div>
+{% block extra_css %}
+<style>
+    .exchange-container {
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        color: azure;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .exchange-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #242424;
+        border: 1px solid #444;
+        border-radius: 5px;
+    }
+    
+    .balances {
+        font-size: 1.1em;
+    }
+    
+    .main-area {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    
+    @media (max-width: 768px) {
+        .main-area {
+            flex-direction: column;
+        }
+    }
+    
+    .order-book, .order-form-container, .user-orders {
+        background: #242424;
+        padding: 20px;
+        border: 1px solid #444;
+        border-radius: 5px;
+        flex: 1;
+    }
+    
+    .order-book {
+        flex: 2;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    
+    th, td {
+        padding: 8px;
+        text-align: right;
+        border-bottom: 1px solid #333;
+    }
+    
+    th {
+        color: #aaa;
+        font-weight: normal;
+        text-align: right;
+    }
+    
+    th:first-child, td:first-child {
+        text-align: left;
+    }
+    
+    .ask-row { color: #ff5b5b; }
+    .bid-row { color: #00e676; }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #ddd;
+    }
+    
+    .form-group input, .form-group select {
+        width: 100%;
+        padding: 8px;
+        background: #333;
+        border: 1px solid #555;
+        color: white;
+        border-radius: 3px;
+    }
+    
+    .btn {
+        width: 100%;
+        padding: 10px;
+        background: #4a90e2;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 1em;
+    }
+    
+    .btn:hover { background: #357abd; }
+    
+    .btn-cancel {
+        background: transparent;
+        color: #ff5b5b;
+        border: 1px solid #ff5b5b;
+        padding: 4px 8px;
+        font-size: 0.8em;
+        width: auto;
+    }
+    
+    .btn-cancel:hover { background: #ff5b5b; color: white; }
+    
+    .order-type-toggle {
+        display: flex;
+        margin-bottom: 15px;
+        border-radius: 3px;
+        overflow: hidden;
+        border: 1px solid #555;
+    }
+    
+    .order-type-toggle div {
+        flex: 1;
+        text-align: center;
+        padding: 8px;
+        cursor: pointer;
+        background: #333;
+    }
+    
+    .order-type-toggle div.active[data-type="bid"] { background: #00e676; color: black; }
+    .order-type-toggle div.active[data-type="ask"] { background: #ff5b5b; color: white; }
+    
+    #message-box {
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 3px;
+        display: none;
+    }
+    .msg-success { background: rgba(0, 230, 118, 0.2); border: 1px solid #00e676; color: #00e676; }
+    .msg-error { background: rgba(255, 91, 91, 0.2); border: 1px solid #ff5b5b; color: #ff5b5b; }
+</style>
 {% endblock %}
+
+{% block content %}
+<div class="exchange-container">
+    
+    <div class="exchange-header">
+        <div>
+            <h2>Exchange</h2>
+            <form method="GET" id="network-form" style="display:inline-block; margin-top: 10px;">
+                <label for="network">Select Network: </label>
+                <select name="network" id="network" onchange="document.getElementById('network-form').submit()" style="padding: 5px; background: #333; color: white; border: 1px solid #555;">
+                    {% for c in cryptocurrencies %}
+                        <option value="{{ c.symbol }}" {% if active_crypto and active_crypto.symbol == c.symbol %}selected{% endif %}>{{ c.name }} ({{ c.symbol }})</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+        
+        {% if user.is_authenticated %}
+        <div class="balances">
+            <strong>Market Price: <span id="market-price" style="color: #00e676;">£{{ active_crypto.current_price|floatformat:2 }}</span></strong><br>
+            <span style="color: #4a90e2;">Fiat: £{{ user.profile.balance|floatformat:2 }}</span><br>
+            <span style="color: #f39c12;">Crypto: {{ crypto_balance|floatformat:8 }} {{ active_crypto.symbol }}</span>
+        </div>
+        {% else %}
+        <div><a href="{% url 'users:login' %}" style="color: #4a90e2;">Login to trade</a></div>
+        {% endif %}
+    </div>
+
+    {% if active_crypto %}
+    <div class="main-area">
+        <!-- Order Book -->
+        <div class="order-book">
+            <h3>Order Book</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Price (£)</th>
+                        <th>Amount</th>
+                        <th>Total (£)</th>
+                    </tr>
+                </thead>
+                <tbody id="asks-body">
+                    <!-- Asks injected here -->
+                    <tr><td colspan="3" style="text-align: center; color: #666;">Loading...</td></tr>
+                </tbody>
+            </table>
+            
+            <div style="text-align: center; margin: 15px 0; color: #666; border-top: 1px solid #444; border-bottom: 1px solid #444; padding: 5px 0;">
+                <span id="spread">Spread: --</span>
+            </div>
+            
+            <table>
+                <tbody id="bids-body">
+                    <!-- Bids injected here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Order Form -->
+        <div class="order-form-container">
+            <h3>Place Order</h3>
+            
+            <div id="message-box"></div>
+            
+            {% if user.is_authenticated %}
+            <form id="place-order-form">
+                {% csrf_token %}
+                <input type="hidden" id="order-type" value="bid">
+                
+                <div class="order-type-toggle">
+                    <div class="type-btn active" data-type="bid">Buy {{ active_crypto.symbol }}</div>
+                    <div class="type-btn" data-type="ask">Sell {{ active_crypto.symbol }}</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="price">Price (£)</label>
+                    <input type="number" id="price" step="0.00000001" min="0" required placeholder="0.00">
+                </div>
+                
+                <div class="form-group">
+                    <label for="amount">Amount ({{ active_crypto.symbol }})</label>
+                    <input type="number" id="amount" step="0.00000001" min="0" required placeholder="0.00">
+                </div>
+                
+                <div class="form-group">
+                    <label>Total Value: <span id="total-val">£0.00</span></label>
+                </div>
+                
+                <button type="submit" class="btn" id="submit-btn">Place Bid Order</button>
+            </form>
+            {% else %}
+            <p style="color: #aaa; text-align: center; padding: 20px 0;">You must be logged in to place orders.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- User's Open Orders -->
+    {% if user.is_authenticated %}
+    <div class="user-orders">
+        <h3>Your Open Orders</h3>
+        {% if open_orders %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Price</th>
+                    <th>Amount</th>
+                    <th>Filled</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in open_orders %}
+                <tr>
+                    <td class="{% if order.order_type == 'bid' %}bid-row{% else %}ask-row{% endif %}">{{ order.order_type|upper }}</td>
+                    <td>£{{ order.price|floatformat:8 }}</td>
+                    <td>{{ order.amount|floatformat:8 }}</td>
+                    <td>{{ order.filled_amount|floatformat:8 }}</td>
+                    <td>{{ order.created_at|date:"M d, H:i:s" }}</td>
+                    <td>
+                        <button class="btn-cancel" onclick="cancelOrder({{ order.id }})">Cancel</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color: #666; font-style: italic;">No open orders.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% endif %} <!-- End if active_crypto -->
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    const symbol = "{{ active_crypto.symbol|default:'' }}";
+    
+    function updateOrderBook() {
+        if (!symbol) return;
+        
+        $.ajax({
+            url: "{% url 'exchange:api_order_book' %}?network=" + symbol,
+            method: 'GET',
+            success: function(data) {
+                renderOrderBook(data);
+            }
+        });
+    }
+    
+    function renderOrderBook(data) {
+        // Update Market Price
+        if (data.current_price) {
+            $('#market-price').text('£' + data.current_price.toFixed(2));
+        }
+
+        // Render Asks (reverse order so lowest is at bottom, near the middle)
+        let asksHtml = '';
+        let asks = data.asks.slice().reverse(); 
+        if (asks.length === 0) {
+            asksHtml = '<tr><td colspan="3" style="text-align: center; color: #666;">No asks</td></tr>';
+        } else {
+            asks.forEach(ask => {
+                let total = (ask.price * ask.amount).toFixed(2);
+                asksHtml += `<tr class="ask-row">
+                    <td>£${ask.price.toFixed(8)}</td>
+                    <td>${ask.amount.toFixed(8)}</td>
+                    <td>£${total}</td>
+                </tr>`;
+            });
+        }
+        $('#asks-body').html(asksHtml);
+        
+        // Render Bids
+        let bidsHtml = '';
+        if (data.bids.length === 0) {
+            bidsHtml = '<tr><td colspan="3" style="text-align: center; color: #666;">No bids</td></tr>';
+        } else {
+            data.bids.forEach(bid => {
+                let total = (bid.price * bid.amount).toFixed(2);
+                bidsHtml += `<tr class="bid-row">
+                    <td>£${bid.price.toFixed(8)}</td>
+                    <td>${bid.amount.toFixed(8)}</td>
+                    <td>£${total}</td>
+                </tr>`;
+            });
+        }
+        $('#bids-body').html(bidsHtml);
+        
+        // Update Spread
+        if (data.asks.length > 0 && data.bids.length > 0) {
+            let lowestAsk = data.asks[0].price; // already sorted low to high from backend
+            let highestBid = data.bids[0].price; // already sorted high to low
+            let spread = lowestAsk - highestBid;
+            $('#spread').text(`Spread: £${spread.toFixed(8)}`);
+        } else {
+            $('#spread').text('Spread: --');
+        }
+    }
+    
+    function setOrderType(type) {
+        $('.type-btn').removeClass('active');
+        $(`.type-btn[data-type="${type}"]`).addClass('active');
+        $('#order-type').val(type);
+        
+        if (type === 'bid') {
+            $('#submit-btn').text('Place Bid Order').css('background', '#00e676').css('color', 'black');
+        } else {
+            $('#submit-btn').text('Place Ask Order').css('background', '#ff5b5b').css('color', 'white');
+        }
+    }
+    
+    function showMessage(msg, isError=false) {
+        const box = $('#message-box');
+        box.text(msg);
+        box.removeClass('msg-error msg-success');
+        box.addClass(isError ? 'msg-error' : 'msg-success');
+        box.show();
+        setTimeout(() => box.fadeOut(), 5000);
+    }
+    
+    // Setup form
+    $(document).ready(function() {
+        if (!symbol) return;
+        
+        updateOrderBook();
+        // Refresh order book every 3 seconds
+        setInterval(updateOrderBook, 3000);
+        
+        $('.type-btn').click(function() {
+            setOrderType($(this).data('type'));
+        });
+        
+        $('#price, #amount').on('input', function() {
+            let p = parseFloat($('#price').val()) || 0;
+            let a = parseFloat($('#amount').val()) || 0;
+            $('#total-val').text('£' + (p * a).toFixed(2));
+        });
+        
+        $('#place-order-form').submit(function(e) {
+            e.preventDefault();
+            
+            const btn = $('#submit-btn');
+            btn.prop('disabled', true);
+            
+            const payload = {
+                network: symbol,
+                order_type: $('#order-type').val(),
+                price: $('#price').val(),
+                amount: $('#amount').val()
+            };
+            
+            $.ajax({
+                url: "{% url 'exchange:api_place_order' %}",
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val()
+                },
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                success: function(res) {
+                    btn.prop('disabled', false);
+                    if (res.status === 'success') {
+                        let fillStr = res.order_status === 'filled' ? ' (Fully filled!)' : '';
+                        showMessage('Order placed successfully' + fillStr);
+                        $('#price').val('');
+                        $('#amount').val('');
+                        $('#total-val').text('£0.00');
+                        updateOrderBook();
+                        setTimeout(() => location.reload(), 1500); // Reload to update balances and user orders table
+                    } else {
+                        showMessage(res.error || 'Failed to place order', true);
+                    }
+                },
+                error: function(xhr) {
+                    btn.prop('disabled', false);
+                    let err = "Failed to place order";
+                    try { err = JSON.parse(xhr.responseText).error || err; } catch(e){}
+                    showMessage(err, true);
+                }
+            });
+        });
+    });
+    
+    function cancelOrder(id) {
+        if(!confirm('Are you sure you want to cancel this order?')) return;
+        
+        $.ajax({
+            url: `/exchange/api/cancel/${id}/`,
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}' // We can just use the template variable since it's in a block
+            },
+            success: function(res) {
+                if (res.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('Failed to cancel order: ' + res.error);
+                }
+            },
+            error: function(xhr) {
+                alert('Error cancelling order.' + xhr.responseText);
+            }
+        });
+    }
+</script>
+{% endblock %}

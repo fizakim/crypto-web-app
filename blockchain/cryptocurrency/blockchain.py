@@ -40,6 +40,9 @@ class Blockchain:
     def get_last_block(self):
         return self.chain[-1]
 
+    def get_balance(self, address):
+        return self.utxo_set.get_balance(address)
+
     def add_transaction(self, transaction):
         self.mempool.add_transaction(transaction, self.utxo_set)
 

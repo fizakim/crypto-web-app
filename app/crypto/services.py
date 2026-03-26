@@ -9,7 +9,7 @@ from django.db import transaction as db_transaction
 
 from blockchain.cryptocurrency import Blockchain
 from blockchain.cryptocurrency.config import NetworkConfig
-from .models import Cryptocurrency
+from .models import Cryptocurrency, Wallet
 from .models import Blockchain as BlockchainModel
 from .models import Block as BlockModel
 from blockchain.cryptocurrency.block import Block
@@ -123,3 +123,12 @@ def submit_mined_block(symbol, block_data):
 
 def get_mempool_transactions():
     pass
+
+def get_user_crypto_balance(user, symbol):
+    wallet = Wallet.objects.filter(user=user, cryptocurrency__symbol=symbol).first()
+    if not wallet:
+        return 0
+    blockchain = get_blockchain(symbol)
+    if not blockchain:
+        return 0
+    return blockchain.get_balance(wallet.address)

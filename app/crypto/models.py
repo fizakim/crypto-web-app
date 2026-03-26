@@ -7,6 +7,8 @@ class Cryptocurrency(models.Model):
     decimals = models.IntegerField(default=8)
     mining_reward = models.DecimalField(max_digits=20, decimal_places=8)
     initial_difficulty = models.IntegerField()
+    current_price = models.DecimalField(max_digits=20, decimal_places=8, default=0)
+    price_updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
