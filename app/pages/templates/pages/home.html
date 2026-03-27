@@ -1,69 +1,84 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Home{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'pages/css/home.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="page">
-    <div class="dashboard-grid">
-        <div class="panel">
-            <h2>Largest Holdings:</h2>
-            <ul class="rank-list">
-                {% for holding in largest_holdings %}
-                    <li>{{ holding.symbol }} "{{ holding.amount }}"</li>
-                {% empty %}
-                    <li>No portfolio data yet</li>
-                {% endfor %}
-            </ul>
-
-            <div style="margin: 20px 0; display: flex; gap: 10px; flex-wrap: wrap;">
-                <a href="?period=24h" class="btn">24h</a>
-                <a href="?period=7d" class="btn">7d</a>
-                <a href="?period=30d" class="btn">30d</a>
+<div class="lobby-wrapper">
+    <div class="lobby-top-row">
+        <!-- Top Left: Chart -->
+        <div class="lobby-card">
+            <h2 class="lobby-card-title">Crypto chart</h2>
+            <div class="chart-container">
+                <canvas id="walletChart"></canvas>
             </div>
-
-            <h2>Smallest Holdings:</h2>
-            <ul class="rank-list">
-                {% for holding in smallest_holdings %}
-                    <li>{{ holding.symbol }} "{{ holding.amount }}"</li>
-                {% empty %}
-                    <li>No portfolio data yet</li>
-                {% endfor %}
-            </ul>
+            <div class="chart-actions">
+                <span style="color: var(--text-muted); font-size: 0.9rem;">Showing {{ selected_period }} data</span>
+                <div class="period-btns">
+                    <a href="?period=24h" class="period-btn {% if selected_period == '24h' %}active{% endif %}">24h</a>
+                    <a href="?period=7d" class="period-btn {% if selected_period == '7d' %}active{% endif %}">7d</a>
+                    <a href="?period=30d" class="period-btn {% if selected_period == '30d' %}active{% endif %}">30d</a>
+                </div>
+            </div>
         </div>
 
-        <div class="center-column">
-            <div class="wallet-circle">
+        <!-- Top Right: Stats -->
+        <div class="lobby-card stats-card">
+            <h2 class="lobby-card-title" style="align-self: flex-start; width: 100%; text-align: left;">Crypto stats</h2>
+            
+            <div class="wallet-display">
+                <div class="wallet-label">Wallet Value</div>
                 <h1>£{{ wallet_value }}</h1>
-                <p>Wallet Value</p>
-                <p>
-                    {% if wallet_change_percent >= 0 %}+{% endif %}{{ wallet_change_percent }}% in past {{ selected_period }}
-                </p>
-            </div>
-
-            <div class="panel" style="width: 100%; text-align: center;">
-                <h2>Investment earnings:</h2>
-                <p style="margin: 14px 0;">£{{ investment_earnings }} over {{ selected_period }}</p>
-
-                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                    <a href="?period=24h" class="btn">24h</a>
-                    <a href="?period=7d" class="btn">7d</a>
-                    <a href="?period=30d" class="btn">30d</a>
+                <div class="wallet-change {% if wallet_change_percent >= 0 %}text-success{% else %}text-danger{% endif %}">
+                    {% if wallet_change_percent > 0 %}+{% endif %}{{ wallet_change_percent }}% ({{ selected_period }})
                 </div>
             </div>
 
-            <div class="small-actions">
-                <a href="{% url 'users:account_overview' %}" class="btn">Account overview</a>
-                <a href="{% url 'exchange:exchange' %}" class="btn">To exchange page</a>
-                <a href="{% url 'users:logout' %}" class="btn">Sign out</a>
+            <div class="earnings-box">
+                <h3>Investment Earnings</h3>
+                <div class="earnings-val">£{{ investment_earnings }} <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">/ {{ selected_period }}</span></div>
+            </div>
+
+            <div class="action-links">
+                <a href="{% url 'users:account_overview' %}">Account Overview</a>
+                <a href="{% url 'exchange:exchange' %}">Exchange Page</a>
             </div>
         </div>
+    </div>
 
-        <div>
-            <div class="graph-box">
-                <canvas id="walletChart"></canvas>
+    <!-- Bottom: Holdings -->
+    <div class="lobby-card">
+        <h2 class="lobby-card-title">Money in various cryptocurrencies</h2>
+        <div class="holdings-grid">
+            <div class="holdings-col">
+                <h3>Largest Holdings</h3>
+                <ul class="modern-list">
+                    {% for holding in largest_holdings %}
+                        <li>
+                            <span class="holding-symbol">{{ holding.symbol }}</span> 
+                            <span class="holding-amount">{{ holding.amount }}</span>
+                        </li>
+                    {% empty %}
+                        <div class="empty-note">No portfolio data yet</div>
+                    {% endfor %}
+                </ul>
             </div>
-            <div class="slider-box">
-                <p>Showing {{ selected_period }} wallet data</p>
+            <div class="holdings-col">
+                <h3>Smallest Holdings</h3>
+                <ul class="modern-list">
+                    {% for holding in smallest_holdings %}
+                        <li>
+                            <span class="holding-symbol">{{ holding.symbol }}</span> 
+                            <span class="holding-amount">{{ holding.amount }}</span>
+                        </li>
+                    {% empty %}
+                        <div class="empty-note">No portfolio data yet</div>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
     </div>
@@ -71,50 +86,9 @@
 
 {{ chart_labels|json_script:"chart-labels" }}
 {{ chart_values|json_script:"chart-values" }}
+{% endblock %}
 
+{% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const labels = JSON.parse(document.getElementById('chart-labels').textContent);
-    const values = JSON.parse(document.getElementById('chart-values').textContent);
-    const ctx = document.getElementById('walletChart').getContext('2d');
-
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Wallet Value',
-                data: values,
-                borderColor: '#f5f5f5',
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                borderWidth: 2,
-                tension: 0.3,
-                fill: true,
-                pointRadius: 3,
-                pointBackgroundColor: '#f5f5f5'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    labels: {
-                        color: '#f5f5f5'
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    ticks: { color: '#cfcfcf' },
-                    grid: { color: '#222' }
-                },
-                y: {
-                    ticks: { color: '#cfcfcf' },
-                    grid: { color: '#222' }
-                }
-            }
-        }
-    });
-</script>
+<script src="{% static 'pages/js/home.js' %}"></script>
 {% endblock %}

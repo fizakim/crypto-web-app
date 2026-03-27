@@ -37,9 +37,13 @@ body {
     align-items: center;
     gap: 20px;
     background: var(--bg-header);
-    border-bottom: 2px solid gray;
-    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    padding: 18px 30px;
     flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 .site-header a {
@@ -55,6 +59,8 @@ body {
 .site-title {
     margin: 0;
     font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
 .main-nav {
@@ -65,8 +71,15 @@ body {
 }
 
 .main-nav a {
-    font-size: 20px;
-    padding: 5px;
+    font-size: 18px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.main-nav a:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--accent-color);
 }
 
 .auth-nav {
@@ -100,7 +113,9 @@ body {
     color: var(--text-main);
     cursor: pointer;
     font: inherit;
-    padding: 0;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
 }
 
 .btn-link:hover {
