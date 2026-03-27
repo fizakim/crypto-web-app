@@ -11,10 +11,12 @@ from django.db import transaction as db_transaction
 from blockchain.cryptocurrency import Blockchain
 from blockchain.cryptocurrency.config import NetworkConfig
 from blockchain.cryptocurrency.block import Block
+from blockchain.cryptocurrency.transaction import Transaction as ChainTransaction
 
 from .models import Cryptocurrency, Wallet, PriceHistory
 from .models import Blockchain as BlockchainModel
 from .models import Block as BlockModel
+from .models import Transaction as TransactionModel
 
 import ecdsa
 from blockchain.client.wallet import Wallet as BlockchainWallet
@@ -57,11 +59,28 @@ def _hydrate_chain_from_db(blockchain_mem, crypto):
             continue
 
         block = Block.from_json(db_block.block_data)
+        try:
+            blockchain_mem.submit_block(block)
+        except ValueError as e:
+            # Stop hydration if there's an inconsistency
+            print(f"Stopping hydration for {crypto.symbol} at block {db_block.height}: {str(e)}")
+            break
 
-        if block.index < len(blockchain_mem.chain):
-            continue
-
-        blockchain_mem.submit_block(block)
+    # Hydrate pending transactions
+    pending_txs = TransactionModel.objects.filter(
+        wallet__cryptocurrency=crypto,
+        status='pending'
+    )
+    for db_tx in pending_txs:
+        if db_tx.tx_data:
+            from blockchain.cryptocurrency import Transaction as BlockchainTransaction
+            tx = BlockchainTransaction.from_json(db_tx.tx_data)
+            # Only add if unique
+            if tx.tx_hash not in [t.tx_hash for t in blockchain_mem.mempool.transactions]:
+                try:
+                    blockchain_mem.mempool.add_transaction(tx, blockchain_mem.utxo_set)
+                except Exception as e:
+                    print(f"Skipping pending tx {tx.tx_hash} during hydration: {str(e)}")
 
     return blockchain_mem
 
@@ -220,7 +239,47 @@ def submit_mined_block(symbol, block_data):
     if not blockchain_mem:
         raise ValueError("Network not found")
 
-    block = Block.from_json(block_data)
+    if not isinstance(block_data, dict):
+        raise ValueError("Invalid block payload")
+
+    submitted_transactions = block_data.get("transactions", [])
+    if not isinstance(submitted_transactions, list) or len(submitted_transactions) == 0:
+        raise ValueError("Block must include transactions")
+
+    mempool_by_hash = {tx.tx_hash: tx for tx in blockchain_mem.mempool.get_transactions()}
+    resolved_transactions = []
+    seen_hashes = set()
+
+    # Resolve transactions from mempool to ensure data integrity
+    for tx_index, tx_data in enumerate(submitted_transactions):
+        tx_hash = tx_data.get("tx_hash") if isinstance(tx_data, dict) else None
+        if not tx_hash:
+            raise ValueError("Submitted transaction missing tx_hash")
+
+        if tx_index == 0:
+            coinbase_tx = ChainTransaction.from_json(tx_data)
+            if not coinbase_tx.is_coinbase():
+                raise ValueError("First block transaction must be coinbase")
+            resolved_transactions.append(coinbase_tx)
+            continue
+
+        if tx_hash in seen_hashes:
+            raise ValueError(f"Duplicate transaction in block: {tx_hash}")
+        seen_hashes.add(tx_hash)
+
+        mempool_tx = mempool_by_hash.get(tx_hash)
+        if mempool_tx is None:
+            raise ValueError(f"Submitted transaction not found in mempool: {tx_hash}")
+        resolved_transactions.append(mempool_tx)
+
+    block = Block(
+        index=block_data["index"],
+        timestamp=block_data["timestamp"],
+        transactions=resolved_transactions,
+        previous_hash=block_data["previous_hash"],
+        nonce=block_data.get("nonce", 0),
+        difficulty=block_data["difficulty"],
+    )
     blockchain_mem.submit_block(block)
 
     crypto = Cryptocurrency.objects.get(symbol=symbol)
@@ -228,18 +287,29 @@ def submit_mined_block(symbol, block_data):
     block_hash = block.compute_hash()
 
     with db_transaction.atomic():
-        BlockModel.objects.create(
+        # Update or create block record
+        db_block, created = BlockModel.objects.update_or_create(
             blockchain=blockchain_record,
-            block_hash=block_hash,
             height=block.index,
-            prev_block_hash=block.previous_hash,
-            nonce=block.nonce,
-            block_data=block.to_json()
+            defaults={
+                'block_hash': block_hash,
+                'prev_block_hash': block.previous_hash,
+                'nonce': block.nonce,
+                'block_data': block.to_json()
+            }
         )
 
         blockchain_record.tip_hash = block_hash
         blockchain_record.height = block.index
         blockchain_record.save(update_fields=['tip_hash', 'height'])
+
+        # Update transaction statuses
+        db_block = BlockModel.objects.get(block_hash=block_hash)
+        for tx in block.transactions:
+            TransactionModel.objects.filter(tx_id=tx.tx_hash).update(
+                status='confirmed',
+                block=db_block
+            )
 
     return True
 
@@ -283,8 +353,19 @@ def submit_transfer(user, symbol, recipient_address, amount_str):
     if sender_address == recipient_address:
         raise ValueError("Cannot send coins to yourself.")
         
-    utxos = blockchain_mem.get_utxos(sender_address)
+    utxos = []
+    for tx_hash, out_idx, utxo in blockchain_mem.utxo_set.get_utxos_for_address(sender_address):
+        utxos.append((tx_hash, out_idx, utxo.amount))
     signed_tx = b_wallet.create_transaction(recipient_address, amount, utxos)
     
     blockchain_mem.add_transaction(signed_tx)
+    
+    # Persist transaction to DB
+    TransactionModel.objects.create(
+        tx_id=signed_tx.tx_hash,
+        wallet=wallet_record,
+        status='pending',
+        tx_data=signed_tx.to_json()
+    )
+    
     return True

@@ -77,6 +77,7 @@ class Transaction(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     fee = models.DecimalField(max_digits=20, decimal_places=8, default=0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    tx_data = models.JSONField(blank=True, null=True)
 
     def __str__(self):
         return f"TX {self.tx_id[:8]}... ({self.status})"

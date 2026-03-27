@@ -3,5 +3,5 @@
     "symbol": "BTC",
     "decimals": 8,
     "mining_reward": 50.0,
-    "initial_difficulty": 5000
+    "initial_difficulty": 1000
 }

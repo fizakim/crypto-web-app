@@ -93,12 +93,9 @@ $(document).ready(function () {
             txHashes += currentBlockTemplate.transactions[j].tx_hash;
         }
 
-        let zeroCount = String(difficulty).length - 1;
-        if (zeroCount < 1) zeroCount = 1;
-        let targetZeros = "";
-        for (let k = 0; k < zeroCount; k++) {
-            targetZeros += "0";
-        }
+        // Calculate target
+        let target = BigInt("0x" + "f".repeat(64)) / BigInt(difficulty);
+        console.log(`Mining ${currentBlockTemplate.index} with difficulty ${difficulty}. Target: 0x${target.toString(16)}`);
 
         for (let i = 0; i < batchSize; i++) {
             if (!isMining) break;
@@ -111,15 +108,23 @@ $(document).ready(function () {
                 hashOutput.text(hashHex);
             }
 
-            if (hashHex.substring(0, zeroCount) === targetZeros) {
+            if (BigInt("0x" + hashHex) <= target) {
                 liveNonce.text(currentNonce);
                 hashOutput.text(hashHex);
                 if (lastNonceDisplay.length) lastNonceDisplay.text(currentNonce);
                 if (lastHashDisplay.length) lastHashDisplay.text(hashHex);
                 
                 currentBlockTemplate.nonce = currentNonce;
-                submitBlock(currentBlockTemplate);
-                fetchTemplateAndMine();
+                
+                // Submit block and wait
+                submitBlock(currentBlockTemplate).then(() => {
+                    if (isMining) {
+                        currentBlockTemplate = null; // Reset template
+                        fetchTemplateAndMine();
+                    }
+                }).catch((err) => {
+                    console.error("Stopping miner due to submission failure:", err);
+                });
                 return;
             }
 
@@ -132,29 +137,39 @@ $(document).ready(function () {
     }
 
     function submitBlock(blockData) {
-        let network = networkSelect.val();
-        let csrftoken = getCookie('csrftoken');
+        return new Promise((resolve, reject) => {
+            let network = networkSelect.val();
+            let csrftoken = getCookie('csrftoken');
 
-        $.ajax({
-            url: '/crypto/api/mine/submit/',
-            method: 'POST',
-            contentType: 'application/json',
-            headers: { 'X-CSRFToken': csrftoken },
-            data: JSON.stringify({
-                network: network,
-                block: blockData
-            }),
-            success: function (result) {
-                if (result.status === 'success') {
-                    blocksMinedSession++;
-                    if (blocksMinedDisplay.length) blocksMinedDisplay.text(blocksMinedSession);
-                } else {
-                    console.warn('Block submission returned non-success, continuing mining...');
+            $.ajax({
+                url: '/crypto/api/mine/submit/',
+                method: 'POST',
+                contentType: 'application/json',
+                headers: {'X-CSRFToken': csrftoken},
+                data: JSON.stringify({
+                    network: network,
+                    block: blockData
+                }),
+                success: function (result) {
+                    if (result.status === 'success') {
+                        console.log(`Successfully mined block ${blockData.index}`);
+                        blocksMinedSession++;
+                        if (blocksMinedDisplay.length) blocksMinedDisplay.text(blocksMinedSession);
+                        resolve(result);
+                    } else {
+                        console.error(`Block ${blockData.index} rejected:`, result.error || 'Unknown error');
+                        alert(`Block ${blockData.index} was rejected by the server: ${result.error}`);
+                        reject(result.error);
+                    }
+                },
+                error: function (xhr) {
+                    let data = xhr.responseJSON || {};
+                    console.error('Network error during block submission:', data.error || 'Server error');
+                    alert('Mining Error: ' + (data.error || 'Server rejected the block.'));
+                    stopMining();
+                    reject(data.error || 'Network error');
                 }
-            },
-            error: function () {
-                console.warn('Network error during block submission, continuing mining...');
-            }
+            });
         });
     }
 

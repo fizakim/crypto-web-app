@@ -1,62 +1,172 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Account Overview{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/account_overview.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="page">
-    <div class="dashboard-grid">
-        <div class="panel">
-            <h2>Account Details</h2>
-            <ul class="rank-list">
-                <li>Username "{{ request.user.username }}"</li>
-                <li>Email "{{ request.user.email }}"</li>
-                <li>Cash Balance "£{{ profile.balance }}"</li>
-            </ul>
+<div class="ao-wrapper">
+
+    <!-- Page Header -->
+    <div class="ao-header">
+        <h1>Account Overview</h1>
+        <span class="ao-subtitle">Member since {{ member_since|date:"M d, Y" }} &middot; {{ request.user.username }}</span>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="ao-stats-row">
+        <div class="ao-stat-card">
+            <div class="ao-stat-label">Wallet Value</div>
+            <div class="ao-stat-value">&pound;{{ wallet_value|floatformat:2 }}</div>
         </div>
-
-        <div class="center-column">
-            <div class="wallet-circle">
-                <h1>£{{ wallet_value }}</h1>
-                <p>Wallet Value</p>
-                <p>Portfolio: £{{ portfolio_value }}</p>
-            </div>
-
-            <div class="panel" style="width: 100%; text-align: center;">
-                <h2>Portfolio Holdings</h2>
-
-                {% if holdings %}
-                    <ul class="rank-list" style="text-align: left;">
-                        {% for holding in holdings %}
-                            <li>{{ holding.symbol }} "{{ holding.amount }}"</li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p style="margin-top: 14px;">No holdings yet.</p>
-                {% endif %}
-            </div>
-
-            <div class="small-actions">
-                <a href="{% url 'pages:home' %}" class="btn">Back to home</a>
-                <a href="{% url 'exchange:exchange' %}" class="btn">To exchange page</a>
-                <a href="{% url 'users:logout' %}" class="btn">Sign out</a>
-            </div>
+        <div class="ao-stat-card">
+            <div class="ao-stat-label">Cash Balance</div>
+            <div class="ao-stat-value">&pound;{{ profile.balance|floatformat:2 }}</div>
         </div>
-
-        <div>
-            <div class="panel" style="min-height: 340px;">
-                <h2 style="margin-bottom: 18px;">Recent Wallet Snapshots</h2>
-
-                {% if snapshots %}
-                    <ul class="rank-list">
-                        {% for snapshot in snapshots %}
-                            <li>{{ snapshot.period_label }} "£{{ snapshot.total_value }}"</li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>No wallet history yet.</p>
-                {% endif %}
-            </div>
+        <div class="ao-stat-card">
+            <div class="ao-stat-label">Portfolio Value</div>
+            <div class="ao-stat-value">&pound;{{ portfolio_value|floatformat:2 }}</div>
+        </div>
+        <div class="ao-stat-card">
+            <div class="ao-stat-label">Holdings</div>
+            <div class="ao-stat-value">{{ total_holdings }}</div>
         </div>
     </div>
+
+    <!-- Content Row: Holdings + Snapshots -->
+    <div class="ao-content-row">
+
+        <!-- Portfolio Holdings -->
+        <div class="ao-panel">
+            <h2 class="ao-panel-title">Portfolio Holdings</h2>
+            {% if holdings %}
+            <table class="ao-holdings-table">
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for h in holdings %}
+                    <tr>
+                        <td><span class="ao-symbol">{{ h.symbol }}</span></td>
+                        <td>{{ h.amount }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="ao-empty">No holdings yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Wallet Snapshots -->
+        <div class="ao-panel">
+            <h2 class="ao-panel-title">Recent Wallet Snapshots</h2>
+            {% if snapshots %}
+            <ul class="ao-snapshot-list">
+                {% for snap in snapshots %}
+                <li>
+                    <span>{{ snap.period_label }}</span>
+                    <span class="ao-snapshot-value">&pound;{{ snap.total_value|floatformat:2 }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="ao-empty">No wallet history yet.</p>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- Wallet Keys Section -->
+    <div class="ao-wallet-section">
+        <h2 class="ao-panel-title">Wallet Keys</h2>
+        {% if wallet_list %}
+        <table class="ao-wallet-table">
+            <thead>
+                <tr>
+                    <th>Crypto</th>
+                    <th>Address</th>
+                    <th>Private Key</th>
+                    <th>Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for w in wallet_list %}
+                <tr>
+                    <td>
+                        <div class="ao-crypto-name">
+                            <strong>{{ w.name }}</strong>
+                            <small>{{ w.symbol }}</small>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="ao-key-cell">
+                            <span class="ao-key-text" title="{{ w.address }}">{{ w.address }}</span>
+                            <button class="ao-copy-btn" onclick="copyText(this, '{{ w.address }}')" type="button">Copy</button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="ao-key-cell">
+                            <span class="ao-hidden-key" data-key="{{ w.private_key }}" id="key-{{ w.symbol }}">••••••••••••</span>
+                            <button class="ao-reveal-btn" onclick="toggleKey(this, 'key-{{ w.symbol }}')" type="button">Show</button>
+                            <button class="ao-copy-btn" onclick="copyText(this, '{{ w.private_key }}')" type="button">Copy</button>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="ao-balance-chip">{{ w.balance }}</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="ao-empty">No wallets found. Start mining or trading to create a wallet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="ao-actions">
+        <a href="{% url 'pages:home' %}" class="ao-action-btn">Back to Home</a>
+        <a href="{% url 'exchange:exchange' %}" class="ao-action-btn">Exchange</a>
+        <a href="{% url 'crypto:trading' %}" class="ao-action-btn">Trading</a>
+        <a href="{% url 'users:logout' %}" class="ao-action-btn ao-danger">Sign Out</a>
+    </div>
+
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyText(btn, text) {
+    navigator.clipboard.writeText(text).then(function() {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(function() {
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
+        }, 1500);
+    });
+}
+
+function toggleKey(btn, spanId) {
+    var span = document.getElementById(spanId);
+    if (span.textContent === '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022') {
+        span.textContent = span.getAttribute('data-key');
+        span.classList.remove('ao-hidden-key');
+        span.classList.add('ao-key-text');
+        btn.textContent = 'Hide';
+    } else {
+        span.textContent = '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022';
+        span.classList.remove('ao-key-text');
+        span.classList.add('ao-hidden-key');
+        btn.textContent = 'Show';
+    }
+}
+</script>
 {% endblock %}

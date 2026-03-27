@@ -5,9 +5,11 @@
 {% block content %}
 <div class="auth-wrapper">
     <div class="auth-card">
-        <div class="profile-circle">Create Account</div>
+        <div class="profile-circle">Sign Up</div>
+        <h2 class="auth-title">Create Account</h2>
+        <p class="auth-subtitle">Join Crypto Playground and start trading</p>
 
-        <form method="post" class="auth-card">
+        <form method="post" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:18px;">
             {% csrf_token %}
 
             {% if form.errors %}
@@ -17,34 +19,30 @@
             {% endif %}
 
             <div class="form-group">
-                <label for="{{ form.username.id_for_label }}">Username:</label>
+                <label for="{{ form.username.id_for_label }}">Username</label>
                 {{ form.username }}
             </div>
-
             <div class="help-text">{{ form.username.errors }}</div>
 
             <div class="form-group">
-                <label for="{{ form.email.id_for_label }}">Email:</label>
+                <label for="{{ form.email.id_for_label }}">Email</label>
                 {{ form.email }}
             </div>
-
             <div class="help-text">{{ form.email.errors }}</div>
 
             <div class="form-group">
-                <label for="{{ form.password1.id_for_label }}">Password:</label>
+                <label for="{{ form.password1.id_for_label }}">Password</label>
                 {{ form.password1 }}
             </div>
-
             <div class="help-text">
                 {{ form.password1.help_text }}
                 {{ form.password1.errors }}
             </div>
 
             <div class="form-group">
-                <label for="{{ form.password2.id_for_label }}">Confirm Password:</label>
+                <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
                 {{ form.password2 }}
             </div>
-
             <div class="help-text">{{ form.password2.errors }}</div>
 
             <button type="submit" class="btn full">Create Account</button>

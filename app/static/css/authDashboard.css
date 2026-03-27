@@ -1,70 +1,62 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-}
-
-body {
-    background: #050505;
-    color: #f5f5f5;
-    min-height: 100vh;
-}
-
-a {
-    color: inherit;
-    text-decoration: none;
-}
-
-.page {
-    min-height: 100vh;
-    width: 100%;
-    padding: 40px;
-}
+/* ── Auth Pages (Login / Sign Up) ── */
+/* Uses design tokens from baseStyle.css :root */
 
 .auth-wrapper {
-    min-height: 100vh;
+    min-height: calc(100vh - 80px);
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 40px 20px;
 }
 
 .auth-card {
-    width: 360px;
+    width: 100%;
+    max-width: 420px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 40px 36px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 18px;
 }
 
-.graph-box {
-    border: 1px solid #cfcfcf;
-    border-radius: 36px;
-    min-height: 340px;
-    height: 340px;
-    padding: 24px;
-    position: relative;
+/* ── Page Title ── */
+.auth-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 4px;
+    text-align: center;
 }
 
-.graph-box canvas {
-    width: 100% !important;
-    height: 100% !important;
+.auth-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 6px;
 }
 
+/* ── Profile Circle (signup) ── */
 .profile-circle {
-    width: 130px;
-    height: 130px;
-    border: 2px solid #cfcfcf;
+    width: 100px;
+    height: 100px;
+    border: 2px solid var(--accent-color);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    color: #cfcfcf;
-    font-size: 14px;
-    padding: 20px;
+    color: var(--accent-color);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    box-shadow: 0 0 20px rgba(143, 211, 255, 0.12);
 }
 
+/* ── Form Groups ── */
 .form-group {
     width: 100%;
     display: flex;
@@ -73,58 +65,180 @@ a {
 }
 
 .form-group label {
-    font-size: 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
 }
 
 .form-group input {
     width: 100%;
-    padding: 12px;
-    background: transparent;
-    border: 1px solid #cfcfcf;
-    color: white;
+    padding: 12px 14px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    color: var(--text-main);
+    font-size: 15px;
+    font-family: inherit;
     outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.form-group input:focus,
+.auth-card input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(143, 211, 255, 0.15);
+}
+
+/* Style Django-rendered form widget inputs */
+.auth-card input[type="text"],
+.auth-card input[type="password"],
+.auth-card input[type="email"] {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    color: var(--text-main);
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input::placeholder {
+    color: #6a6a6a;
+}
+
+/* ── Buttons ── */
 .row-buttons {
     width: 100%;
     display: flex;
-    justify-content: space-between;
-    gap: 16px;
+    gap: 12px;
+    margin-top: 6px;
 }
 
 .btn {
-    border: 1px solid #cfcfcf;
     padding: 12px 20px;
-    background: transparent;
-    color: white;
+    border-radius: 8px;
     cursor: pointer;
     text-align: center;
-    transition: 0.2s ease;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    transition: all 0.2s ease;
     display: inline-block;
+    text-decoration: none;
+    border: none;
 }
 
-.btn:hover {
-    background: #111;
+.btn-primary,
+.btn.full:first-of-type {
+    background: var(--accent-color);
+    color: #000;
+    flex: 1;
+    box-shadow: 0 2px 8px rgba(143, 211, 255, 0.25);
+}
+
+.btn-primary:hover,
+.btn.full:first-of-type:hover {
+    background: #7ec5f2;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(143, 211, 255, 0.35);
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    flex: 1;
+}
+
+.btn-secondary:hover {
+    background: var(--bg-input);
+    border-color: var(--text-muted);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .btn.full {
     width: 100%;
 }
 
-.message {
-    width: 100%;
-    border: 1px solid #aa4444;
-    color: #ffb3b3;
-    padding: 10px 12px;
-    margin-bottom: 8px;
-    text-align: center;
+/* Second .btn.full is already a link-style "Back to Login" */
+a.btn.full {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
 }
 
+a.btn.full:hover {
+    background: var(--bg-input);
+    border-color: var(--text-muted);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+button.btn.full {
+    background: var(--accent-color);
+    color: #000;
+    box-shadow: 0 2px 8px rgba(143, 211, 255, 0.25);
+}
+
+button.btn.full:hover {
+    background: #7ec5f2;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(143, 211, 255, 0.35);
+}
+
+/* ── Error Messages ── */
+.message {
+    width: 100%;
+    background: rgba(255, 107, 107, 0.12);
+    border: 1px solid var(--danger-color);
+    color: var(--danger-color);
+    padding: 12px 16px;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-size: 14px;
+}
+
+/* ── Help Text ── */
 .help-text {
     width: 100%;
-    color: #bdbdbd;
-    font-size: 13px;
+    color: var(--text-muted);
+    font-size: 12px;
     line-height: 1.5;
+}
+
+.help-text ul {
+    margin: 4px 0 0;
+    padding-left: 18px;
+}
+
+.help-text .errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0;
+    color: var(--danger-color);
+    font-size: 12px;
+}
+
+/* ── Dashboard Styles (account overview) ── */
+.graph-box {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    min-height: 340px;
+    height: 340px;
+    padding: 24px;
+    position: relative;
+    background: var(--bg-card-alt);
+}
+
+.graph-box canvas {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 .dashboard-grid {
@@ -136,15 +250,16 @@ a {
 }
 
 .panel {
-    border: 1px solid #cfcfcf;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
     padding: 24px;
-    background: transparent;
+    background: var(--bg-card);
 }
 
 .wallet-circle {
     width: 290px;
     height: 290px;
-    border: 2px solid #cfcfcf;
+    border: 2px solid var(--accent-color);
     border-radius: 50%;
     display: flex;
     flex-direction: column;
@@ -160,7 +275,7 @@ a {
 }
 
 .wallet-circle p {
-    color: #bdbdbd;
+    color: var(--text-muted);
 }
 
 .center-column {
@@ -172,7 +287,8 @@ a {
 
 .slider-box {
     margin-top: 18px;
-    border: 1px solid #cfcfcf;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
     padding: 10px 16px;
     text-align: center;
 }
@@ -190,6 +306,7 @@ ul.rank-list {
     align-items: center;
 }
 
+/* ── Responsive ── */
 @media (max-width: 1100px) {
     .dashboard-grid {
         grid-template-columns: 1fr;
@@ -198,5 +315,15 @@ ul.rank-list {
     .wallet-circle {
         width: 240px;
         height: 240px;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 28px 20px;
+    }
+
+    .row-buttons {
+        flex-direction: column;
     }
 }

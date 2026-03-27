@@ -50,19 +50,33 @@ class Blockchain:
         if miner_address is None:
             raise ValueError("Miner address is required to receive the mining reward")
 
-        transactions_to_mine = self.mempool.get_transactions()
-
+        transactions_to_mine = []
         total_fees = 0
-        for tx in transactions_to_mine:
-            input_sum = 0
-            for inp in tx.inputs:
-                utxo = self.utxo_set.get(inp.prev_tx_hash, inp.output_index)
-                if utxo:
+        
+        # Filter valid transactions
+        for tx in self.mempool.get_transactions():
+            try:
+                self.utxo_set.verify_transaction(tx)
+                
+                # Check for double-spend
+                input_sum = 0
+                is_double_spend = False
+                for inp in tx.inputs:
+                    utxo = self.utxo_set.get(inp.prev_tx_hash, inp.output_index)
                     input_sum += utxo.amount
-            output_sum = sum(out.amount for out in tx.outputs)
-            total_fees += (input_sum - output_sum)
+                    
+                output_sum = sum(out.amount for out in tx.outputs)
+                total_fees += (input_sum - output_sum)
+                transactions_to_mine.append(tx)
+            except Exception:
+                # Skip invalid
+                continue
 
-        reward_tx_hash = sha256_hash(f"coinbase_{int(time.time())}_{miner_address}".encode())
+        last_block = self.get_last_block()
+        next_index = last_block.index + 1
+        
+        # Create coinbase transaction hash
+        reward_tx_hash = sha256_hash(f"coinbase_{next_index}_{int(time.time())}_{miner_address}".encode())
         reward_tx = Transaction(
             tx_hash=reward_tx_hash,
             inputs=[],
@@ -71,12 +85,8 @@ class Blockchain:
 
         transactions_to_mine.insert(0, reward_tx)
 
-        last_block = self.get_last_block()
-        
-        # self.adjust_difficulty()
-        
         new_block = Block(
-            index=last_block.index + 1,
+            index=next_index,
             timestamp=int(time.time()),
             transactions=transactions_to_mine,
             previous_hash=last_block.compute_hash(),

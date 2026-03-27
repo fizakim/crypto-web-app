@@ -77,6 +77,36 @@
         </div>
     </div>
 
+    <div class="pending-section card" style="margin-top: var(--spacing-lg); width: 100%;">
+        <h3>Pending Transfers</h3>
+        <div class="pending-list" style="overflow-x: auto;">
+            {% if pending_transactions %}
+                <table style="width: 100%; border-collapse: collapse; margin-top: var(--spacing-sm);">
+                    <thead>
+                        <tr style="text-align: left; border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.85rem;">
+                            <th style="padding: 8px;">Time</th>
+                            <th style="padding: 8px;">Network</th>
+                            <th style="padding: 8px;">TX ID</th>
+                            <th style="padding: 8px;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tx in pending_transactions %}
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 12px 8px; font-size: 0.9rem;">{{ tx.timestamp|date:"H:i:s" }}</td>
+                            <td style="padding: 12px 8px; font-size: 0.9rem;">{{ tx.wallet.cryptocurrency.symbol }}</td>
+                            <td style="padding: 12px 8px; font-family: monospace; font-size: 0.8rem;">{{ tx.tx_id|truncatechars:20 }}</td>
+                            <td style="padding: 12px 8px;"><span style="color: var(--accent-color); font-weight: bold; font-size: 0.8rem; text-transform: uppercase;">{{ tx.status }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p style="color: var(--text-muted); padding: var(--spacing-md); text-align: center;">No pending transfers found.</p>
+            {% endif %}
+        </div>
+    </div>
+
 </div>
 {% endblock %}
 

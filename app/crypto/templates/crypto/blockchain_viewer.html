@@ -96,6 +96,39 @@
         </section>
     </div>
 
+    <section class="card explorer-panel" style="margin-top: var(--spacing-lg);">
+        <div class="panel-heading">
+            <h3>Mempool (Pending)</h3>
+            <p>Unconfirmed transactions waiting for next block</p>
+        </div>
+        <div class="mempool-container" style="overflow-x: auto;">
+            {% if pending_transactions %}
+                <table style="width: 100%; border-collapse: collapse; margin-top: var(--spacing-sm);">
+                    <thead>
+                        <tr style="text-align: left; border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.85rem;">
+                            <th style="padding: 12px 8px;">Time</th>
+                            <th style="padding: 12px 8px;">Transaction Hash</th>
+                            <th style="padding: 12px 8px;">Sender Address</th>
+                            <th style="padding: 12px 8px;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tx in pending_transactions %}
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 12px 8px; font-size: 0.9rem;">{{ tx.timestamp|date:"H:i:s" }}</td>
+                            <td style="padding: 12px 8px; font-family: monospace; font-size: 0.8rem; color: var(--accent-color);">{{ tx.tx_id }}</td>
+                            <td style="padding: 12px 8px; font-family: monospace; font-size: 0.8rem;">{{ tx.wallet.address|truncatechars:32 }}</td>
+                            <td style="padding: 12px 8px;"><span class="badge badge-pending" style="color: var(--accent-color); border: 1px solid var(--accent-color); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase;">{{ tx.status }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p style="color: var(--text-muted); padding: var(--spacing-lg); text-align: center;">Memory pool is currently empty.</p>
+            {% endif %}
+        </div>
+    </section>
+
     <section class="card explorer-panel blocks-panel">
         <div class="panel-heading">
             <h3>Recent Blocks</h3>

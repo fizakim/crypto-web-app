@@ -2,7 +2,7 @@ from django.views.generic import TemplateView
 from django.http import JsonResponse
 import json
 
-from .models import Wallet
+from .models import Wallet, Transaction
 from .services import (
     get_blockchain,
     get_all_networks,
@@ -85,6 +85,15 @@ class BlockchainView(TemplateView):
             price_history = get_price_history(active_crypto.symbol, limit=30)
 
         context['blocks'] = blocks
+        
+        # Add pending transactions
+        if active_crypto:
+            pending_txs = Transaction.objects.filter(
+                wallet__cryptocurrency=active_crypto,
+                status='pending'
+            ).order_by('-timestamp')
+            context['pending_transactions'] = pending_txs
+
         context.update(self._build_explorer_context(active_crypto, blocks, price_history, blockchain_mem))
         return context
 
@@ -147,7 +156,7 @@ def submit_mined_block_api(request):
         submit_mined_block(symbol, data.get('block'))
         return JsonResponse({'status': 'success'})
     except Exception as e:
-        return JsonResponse({'error': str(e)})
+        return JsonResponse({'error': str(e)}, status=400)
 
 
 class TradingView(TemplateView):
@@ -156,6 +165,15 @@ class TradingView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['cryptocurrencies'] = get_all_networks()
+        
+        # Add pending transactions for the user
+        if self.request.user.is_authenticated:
+            pending_txs = Transaction.objects.filter(
+                wallet__user=self.request.user,
+                status='pending'
+            ).order_by('-timestamp')
+            context['pending_transactions'] = pending_txs
+            
         return context
 
 
