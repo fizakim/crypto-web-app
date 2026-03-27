@@ -33,13 +33,12 @@ body {
 
 .site-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 20px;
-    background: var(--bg-header);
-    border-bottom: 1px solid var(--border-color);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    padding: 18px 30px;
+    gap: 30px; /* Provides space between Site Title and Main Nav */
+    background-color: var(--bg-header);
+    border-bottom: 2px solid gray;
+    box-shadow: 2px 2px 8px black;
+    padding: 15px 30px;
     flex-wrap: wrap;
     position: sticky;
     top: 0;
@@ -78,24 +77,51 @@ body {
 }
 
 .main-nav a:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--accent-color);
+    background-color: #242424;
+    border-radius: 5px;
+    color: lightblue;
 }
 
 .auth-nav {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 15px; /* Softer gap for non-bold fonts */
     flex-wrap: wrap;
+    margin-left: auto; /* Pushes this all the way to the right */
 }
 
 .auth-nav a {
     font-size: 20px;
 }
 
-.user-balance,
-.user-greeting {
+.user-balance {
     color: var(--text-main);
+    background-color: #242424;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid gray;
+    font-weight: normal;
+    display: inline-block;
+}
+
+.site-header .user-greeting, 
+.site-header .user-greeting:visited {
+    font-size: 0.95rem; /* Smaller text size */
+    font-weight: normal; /* Not bold */
+    padding: 8px 20px;
+    background: #8fd3ff; /* vivid light blue */
+    color: #000;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: box-shadow 0.2s, transform 0.2s, background-color 0.2s;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.site-header .user-greeting:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    background: #7ec5f2;
 }
 
 .divider {
@@ -120,6 +146,25 @@ body {
 
 .btn-link:hover {
     color: white;
+}
+
+/* Specific styling for the logout button in the header */
+.site-header .btn-link {
+    font-size: 0.95rem; /* Smaller text size */
+    font-weight: normal; /* Not bold */
+    padding: 8px 20px;
+    background: var(--danger-color);
+    color: #fff;
+    border-radius: 8px;
+    transition: box-shadow 0.2s, transform 0.2s, background-color 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.site-header .btn-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    background: #ff5252;
+    color: #fff;
 }
 
 .site-main {

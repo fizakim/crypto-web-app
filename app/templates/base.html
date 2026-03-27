@@ -24,8 +24,7 @@
         <div class="auth-nav">
             {% if user.is_authenticated %}
             <span class="user-balance">Balance: £{{ user.profile.balance|default:"0.00"|floatformat:2 }}</span>
-            <span class="divider">|</span>
-            <span class="user-greeting"><strong>{{ user.username }}</strong></span>
+            <a href="{% url 'users:account_overview' %}" class="user-greeting"><strong>{{ user.username }}</strong></a>
             <span class="divider">|</span>
             <form action="{% url 'users:logout' %}" method="post" class="logout-inline-form">
                 {% csrf_token %}
