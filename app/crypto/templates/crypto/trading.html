@@ -1,19 +1,85 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Trading Platform - Crypto Playground{% endblock %}
+{% block title %}Trading - Crypto Playground{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'crypto/css/trading.css' %}">
+{% endblock %}
 
 {% block content %}
-    <h2>Crypto Trading Platform</h2>
+<div class="trading-container">
 
-    <div class="sender">
-
+    <div class="trading-card sender-card">
+        <h3>Sender</h3>
+        <div class="user-stats">
+            <div class="stat-item">
+                <span class="stat-label">User Status</span>
+                <span class="stat-value">{{ user.username }} (Active)</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">User Hash (Wallet Address)</span>
+                <span class="stat-value" id="sender-hash">Awaiting Hash...</span> <!-- Will be injected by JS later -->
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Available Balance</span>
+                <span class="stat-value balance-highlight" id="sender-balance">£{{ user.profile.balance|floatformat:2|default:"0.00"
+                    }}</span>
+            </div>
+        </div>
     </div>
 
-    <div class="reciever">
+    <div class="controls-column">
+        <div class="control-group">
+            {% csrf_token %}
+            <label for="coin-type">Crypto Coin Type</label>
+            <select id="coin-type" class="control-input">
+                <option value="" disabled selected>Select a coin</option>
+                {% for crypto in cryptocurrencies %}
+                <option value="{{ crypto.symbol }}">{{ crypto.name }} ({{ crypto.symbol }})</option>
+                {% endfor %}
+            </select>
+        </div>
 
+        <div class="control-group">
+            <label for="receiver-hash">Receiver Hash</label>
+            <input type="text" id="receiver-hash" class="control-input" placeholder="e.g. 0x123abc...">
+        </div>
+
+        <div class="transfer-arrow">
+            <div class="transfer-arrow-line"></div>
+            <div class="transfer-arrow-head"></div>
+        </div>
+
+        <div class="control-group">
+            <label for="send-amount">Amount to Send</label>
+            <input type="number" id="send-amount" class="control-input" placeholder="0.00" step="0.00000001" min="0">
+        </div>
+
+        <button class="btn-send" id="btn-submit-transfer">Send Coins</button>
     </div>
 
-    <div class="exchangeInfo">
-
+    <div class="trading-card receiver-card">
+        <h3>Receiver</h3>
+        <div class="user-stats">
+            <div class="stat-item">
+                <span class="stat-label">Receiver Status</span>
+                <span class="stat-value" id="receiver-status">Pending Address...</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">User Hash</span>
+                <span class="stat-value" id="receiver-hash-display">---</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Expected Received</span>
+                <span class="stat-value balance-highlight" id="receiver-expected-amount">0.00</span>
+            </div>
+        </div>
     </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'crypto/js/trading.js' %}"></script>
 {% endblock %}

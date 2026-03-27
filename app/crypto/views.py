@@ -9,6 +9,8 @@ from .services import (
     get_chain_snapshot,
     get_price_history,
     submit_mined_block,
+    get_user_crypto_balance,
+    submit_transfer
 )
 
 
@@ -150,3 +152,51 @@ def submit_mined_block_api(request):
 
 class TradingView(TemplateView):
     template_name = 'crypto/trading.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cryptocurrencies'] = get_all_networks()
+        return context
+
+
+def get_wallet_info_api(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Login required'}, status=401)
+        
+    symbol = request.GET.get('network')
+    if not symbol:
+        return JsonResponse({'error': 'Network required'}, status=400)
+        
+    wallet = Wallet.objects.filter(user=request.user, cryptocurrency__symbol=symbol).first()
+    if not wallet:
+        return JsonResponse({'error': f'No wallet found for {symbol}.'}, status=400)
+        
+    balance = get_user_crypto_balance(request.user, symbol)
+    
+    return JsonResponse({
+        'address': wallet.address,
+        'balance': str(balance)
+    })
+
+
+def transfer_coins_api(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Login required'}, status=401)
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+        
+    try:
+        data = json.loads(request.body)
+        symbol = data.get('network')
+        recipient_address = data.get('recipient_address')
+        amount = data.get('amount')
+        
+        if not all([symbol, recipient_address, amount]):
+            return JsonResponse({'error': 'Missing fields'}, status=400)
+            
+        submit_transfer(request.user, symbol, recipient_address, amount)
+        return JsonResponse({'status': 'success'})
+    except ValueError as e:
+        return JsonResponse({'error': str(e)}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': f"Failed to transfer: {str(e)}"}, status=400)

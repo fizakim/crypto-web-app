@@ -16,6 +16,9 @@ from .models import Cryptocurrency, Wallet, PriceHistory
 from .models import Blockchain as BlockchainModel
 from .models import Block as BlockModel
 
+import ecdsa
+from blockchain.client.wallet import Wallet as BlockchainWallet
+
 blockchains = {}
 
 CONFIGS_DIR = os.path.join(os.path.dirname(__file__), '..', 'configs')
@@ -255,3 +258,33 @@ def get_user_crypto_balance(user, symbol):
         return Decimal('0')
 
     return Decimal(str(blockchain.get_balance(wallet.address)))
+
+
+def submit_transfer(user, symbol, recipient_address, amount_str):
+    amount = float(amount_str)
+    
+    wallet_record = Wallet.objects.filter(user=user, cryptocurrency__symbol=symbol).first()
+    if not wallet_record:
+        raise ValueError(f"No wallet found for {symbol}.")
+        
+    crypto = Cryptocurrency.objects.filter(symbol=symbol).first()
+    if not crypto:
+        raise ValueError("Network not found.")
+        
+    config = _build_config(crypto)
+    sk = ecdsa.SigningKey.from_string(bytes.fromhex(wallet_record.private_key), curve=ecdsa.SECP256k1)
+    b_wallet = BlockchainWallet(private_key=sk, config=config)
+    
+    blockchain_mem = get_blockchain(symbol)
+    if not blockchain_mem:
+        raise ValueError("Network not running.")
+        
+    sender_address = b_wallet.get_address()
+    if sender_address == recipient_address:
+        raise ValueError("Cannot send coins to yourself.")
+        
+    utxos = blockchain_mem.get_utxos(sender_address)
+    signed_tx = b_wallet.create_transaction(recipient_address, amount, utxos)
+    
+    blockchain_mem.add_transaction(signed_tx)
+    return True
