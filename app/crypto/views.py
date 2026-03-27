@@ -249,8 +249,8 @@ def submit_mined_block_api(request):
         return JsonResponse({'error': str(e)}, status=400)
 
 
-class TradingView(TemplateView):
-    template_name = 'crypto/trading.html'
+class TransferView(TemplateView):
+    template_name = 'crypto/transfer.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -82,7 +82,7 @@
                 </table>
             </div>
             {% else %}
-            <p class="ao-empty mb-0">No wallets found. Start mining or trading to create a wallet.</p>
+            <p class="ao-empty mb-0">No wallets found. Start mining or transferring to create a wallet.</p>
             {% endif %}
         </div>
     </div>
@@ -90,7 +90,7 @@
     <div class="ao-actions d-flex flex-wrap gap-2 justify-content-center">
         <a href="{% url 'pages:home' %}" class="btn btn-outline-light">Back to Home</a>
         <a href="{% url 'exchange:exchange' %}" class="btn btn-outline-light">Exchange</a>
-        <a href="{% url 'crypto:trading' %}" class="btn btn-outline-light">Trading</a>
+        <a href="{% url 'crypto:transfer' %}" class="btn btn-outline-light">Transfer</a>
         <a href="{% url 'users:logout' %}" class="btn btn-outline-danger">Sign Out</a>
     </div>
 </div>

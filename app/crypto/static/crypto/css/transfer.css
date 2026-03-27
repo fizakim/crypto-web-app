@@ -1,21 +1,21 @@
-.trading-page .trading-card {
+.transfer-page .transfer-card {
     border-color: var(--border-color);
 }
 
-.trading-page .stat-block {
+.transfer-page .stat-block {
     display: flex;
     flex-direction: column;
     gap: 0.45rem;
 }
 
-.trading-page .stat-label {
+.transfer-page .stat-label {
     font-size: 0.78rem;
     color: var(--text-muted);
     letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 
-.trading-page .stat-value {
+.transfer-page .stat-value {
     padding: 0.75rem 0.85rem;
     border: 1px solid var(--border-color);
     border-radius: 10px;
@@ -26,30 +26,30 @@
     word-break: break-all;
 }
 
-.trading-page .mono {
+.transfer-page .mono {
     font-family: "Consolas", "SFMono-Regular", "Menlo", monospace;
 }
 
-.trading-page .balance-highlight {
+.transfer-page .balance-highlight {
     border-color: rgba(141, 207, 111, 0.6);
     background-color: rgba(141, 207, 111, 0.12);
     color: var(--success-color);
     font-size: 1.1rem;
 }
 
-.trading-page .sender-fiat {
+.transfer-page .sender-fiat {
     border-color: rgba(255, 179, 71, 0.6);
     background-color: rgba(255, 179, 71, 0.1);
     color: var(--accent-color);
     font-weight: 700;
 }
 
-.trading-page .sender-balance {
+.transfer-page .sender-balance {
     font-size: 1.02rem;
 }
 
-.trading-page .form-select,
-.trading-page .form-control {
+.transfer-page .form-select,
+.transfer-page .form-control {
     background-color: var(--bg-input);
     border-color: var(--border-color);
     color: var(--text-main);
@@ -58,7 +58,7 @@
     padding: 0.62rem 0.82rem;
 }
 
-.trading-page .form-label {
+.transfer-page .form-label {
     color: var(--text-muted);
     font-size: 0.83rem;
     font-weight: 600;
@@ -66,30 +66,30 @@
     margin-bottom: 0.42rem;
 }
 
-.trading-page .form-control::placeholder {
+.transfer-page .form-control::placeholder {
     color: #a9a394;
     opacity: 1;
 }
 
-.trading-page .form-select option {
+.transfer-page .form-select option {
     background-color: var(--bg-input);
     color: var(--text-main);
 }
 
-.trading-page .form-select:focus,
-.trading-page .form-control:focus {
+.transfer-page .form-select:focus,
+.transfer-page .form-control:focus {
     border-color: rgba(255, 179, 71, 0.75);
     box-shadow: 0 0 0 0.2rem rgba(255, 179, 71, 0.2);
     background-color: var(--bg-input);
     color: var(--text-main);
 }
 
-.trading-page .form-select:disabled,
-.trading-page .form-control:disabled {
+.transfer-page .form-select:disabled,
+.transfer-page .form-control:disabled {
     opacity: 0.7;
 }
 
-.trading-page .transfer-arrow {
+.transfer-page .transfer-arrow {
     width: 100%;
     display: flex;
     align-items: center;
@@ -97,13 +97,13 @@
     margin: 0.1rem 0 0.15rem;
 }
 
-.trading-page .transfer-arrow-line {
+.transfer-page .transfer-arrow-line {
     flex: 1;
     height: 2px;
     background: linear-gradient(90deg, rgba(255, 179, 71, 0.2) 0%, rgba(255, 179, 71, 0.8) 100%);
 }
 
-.trading-page .transfer-arrow-head {
+.transfer-page .transfer-arrow-head {
     width: 0;
     height: 0;
     border-top: 7px solid transparent;
@@ -111,34 +111,34 @@
     border-left: 11px solid rgba(255, 179, 71, 0.9);
 }
 
-.trading-page .stat-value.status-valid {
+.transfer-page .stat-value.status-valid {
     color: var(--success-color);
     border-color: rgba(141, 207, 111, 0.6);
 }
 
-.trading-page .stat-value.status-pending {
+.transfer-page .stat-value.status-pending {
     color: var(--text-main);
 }
 
-.trading-page .btn-send {
+.transfer-page .btn-send {
     border: 1px solid rgba(255, 179, 71, 0.85);
     background-color: var(--accent-color);
     color: #26282d;
     font-weight: 700;
 }
 
-.trading-page .btn-send:hover,
-.trading-page .btn-send:focus {
+.transfer-page .btn-send:hover,
+.transfer-page .btn-send:focus {
     background-color: #ffca74;
     color: #26282d;
 }
 
-.trading-page .btn-send:disabled {
+.transfer-page .btn-send:disabled {
     cursor: not-allowed;
     opacity: 0.65;
 }
 
-.trading-page #transfer-message {
+.transfer-page #transfer-message {
     padding: 0.75rem 0.9rem;
     margin-bottom: 1rem;
     border-radius: 10px;
@@ -146,19 +146,19 @@
     font-weight: 600;
 }
 
-.trading-page .msg-success {
+.transfer-page .msg-success {
     background: rgba(141, 207, 111, 0.15);
     border: 1px solid rgba(141, 207, 111, 0.65);
     color: var(--success-color);
 }
 
-.trading-page .msg-error {
+.transfer-page .msg-error {
     background: rgba(242, 125, 114, 0.15);
     border: 1px solid rgba(242, 125, 114, 0.68);
     color: var(--danger-color);
 }
 
-.trading-page .modern-table {
+.transfer-page .modern-table {
     --bs-table-bg: transparent;
     --bs-table-color: var(--text-main);
     --bs-table-border-color: #575b63;
@@ -166,7 +166,7 @@
     --bs-table-hover-bg: rgba(255, 255, 255, 0.03);
 }
 
-.trading-page .modern-table thead th {
+.transfer-page .modern-table thead th {
     font-size: 0.8rem;
     color: var(--text-muted);
     text-transform: uppercase;
@@ -174,18 +174,18 @@
     border-bottom-width: 1px;
 }
 
-.trading-page .modern-table td,
-.trading-page .modern-table th {
+.transfer-page .modern-table td,
+.transfer-page .modern-table th {
     padding: 0.8rem 1rem;
 }
 
-.trading-page .pending-wide-card .modern-table td,
-.trading-page .pending-wide-card .modern-table th {
+.transfer-page .pending-wide-card .modern-table td,
+.transfer-page .pending-wide-card .modern-table th {
     padding-top: 0.82rem;
     padding-bottom: 0.82rem;
 }
 
-.trading-page .status-pill {
+.transfer-page .status-pill {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -201,25 +201,25 @@
     letter-spacing: 0.03em;
 }
 
-.trading-page .empty-note {
+.transfer-page .empty-note {
     color: var(--text-muted);
     font-style: italic;
 }
 
 @media (max-width: 1199.98px) {
-    .trading-page .stat-value {
+    .transfer-page .stat-value {
         font-size: 0.92rem;
     }
 }
 
 @media (max-width: 575.98px) {
-    .trading-page .modern-table td,
-    .trading-page .modern-table th {
+    .transfer-page .modern-table td,
+    .transfer-page .modern-table th {
         padding: 0.65rem 0.7rem;
         font-size: 0.86rem;
     }
 
-    .trading-page .balance-highlight {
+    .transfer-page .balance-highlight {
         font-size: 1rem;
     }
 }

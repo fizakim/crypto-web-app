@@ -21,7 +21,7 @@
   - `account_overview.html`
 - `app/crypto/`
   - `mining.html`
-  - `trading.html`
+  - `transfer.html`
   - `blockchain_viewer.html`
 - `app/exchange/`
   - `exchange.html`

@@ -1,21 +1,21 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Trading - Crypto Playground{% endblock %}
+{% block title %}Transfer - Crypto Playground{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'crypto/css/trading.css' %}">
+<link rel="stylesheet" href="{% static 'crypto/css/transfer.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="container py-4 py-lg-5 trading-page">
+<div class="container py-4 py-lg-5 transfer-page">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
-        <h1 class="h3 mb-0">Crypto Trading</h1>
+        <h1 class="h3 mb-0">Crypto Transfer</h1>
     </div>
 
     <div class="row g-4 mb-4 align-items-stretch">
         <div class="col-12 col-xl-4">
-            <section class="card h-100 trading-card">
+            <section class="card h-100 transfer-card">
                 <div class="card-body p-3 p-md-4 d-flex flex-column gap-3">
                     <h2 class="h5 mb-1">Sender</h2>
 
@@ -45,7 +45,7 @@
         </div>
 
         <div class="col-12 col-xl-4">
-            <section class="card h-100 trading-card">
+            <section class="card h-100 transfer-card">
                 <div class="card-body p-3 p-md-4 d-flex flex-column">
                     <h2 class="h5 mb-3">Transfer Coins</h2>
                     <div id="transfer-message"></div>
@@ -85,7 +85,7 @@
         </div>
 
         <div class="col-12 col-xl-4">
-            <section class="card h-100 trading-card">
+            <section class="card h-100 transfer-card">
                 <div class="card-body p-3 p-md-4 d-flex flex-column gap-3">
                     <h2 class="h5 mb-1">Receiver</h2>
                     <div class="stat-block">
@@ -105,7 +105,7 @@
         </div>
     </div>
 
-    <section class="card trading-card pending-wide-card">
+    <section class="card transfer-card pending-wide-card">
         <div class="card-body p-0 d-flex flex-column">
             <div class="px-3 px-md-4 py-3 border-bottom border-secondary-subtle">
                 <h2 class="h5 mb-0">Pending Transfers</h2>
@@ -143,9 +143,9 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'crypto/js/trading.js' %}"></script>
+<script src="{% static 'crypto/js/transfer.js' %}"></script>
 <script>
-    TradingPage.init({
+    TransferPage.init({
         walletInfoUrl: "{% url 'crypto:api_wallet_info' %}",
         transferUrl: "{% url 'crypto:api_transfer' %}",
         isAuthenticated: {% if user.is_authenticated %}true{% else %}false{% endif %}

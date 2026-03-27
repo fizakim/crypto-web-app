@@ -1,4 +1,4 @@
-const TradingPage = {
+const TransferPage = {
     config: {
         walletInfoUrl: '',
         transferUrl: '',
