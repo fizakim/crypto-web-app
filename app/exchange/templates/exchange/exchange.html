@@ -39,12 +39,12 @@
                     {% if user.is_authenticated %}
                     <div class="stat-chip">
                         <span class="stat-chip-label">Fiat Balance</span>
-                        <span class="stat-chip-value">&pound;{{ user.profile.balance|floatformat:2 }}</span>
+                        <span id="fiat-balance" class="stat-chip-value">&pound;{{ user.profile.balance|floatformat:2 }}</span>
                     </div>
                     {% if active_crypto %}
                     <div class="stat-chip">
                         <span class="stat-chip-label">{{ active_crypto.symbol }} Balance</span>
-                        <span class="stat-chip-value">{{ crypto_balance|floatformat:8 }}</span>
+                        <span id="crypto-balance" class="stat-chip-value">{{ crypto_balance|floatformat:8 }}</span>
                     </div>
                     {% endif %}
                     {% else %}
@@ -140,13 +140,12 @@
     </div>
 
     {% if user.is_authenticated %}
-    <section class="card exchange-card">
+    <section id="open-orders-section" class="card exchange-card {% if not open_orders %}d-none{% endif %}">
         <div class="card-body p-0">
             <div class="px-3 px-md-4 py-3 border-bottom border-secondary-subtle">
                 <h2 class="h5 mb-0">Your Open Orders</h2>
             </div>
 
-            {% if open_orders %}
             <div class="table-responsive">
                 <table class="table align-middle table-hover mb-0 modern-table">
                     <thead>
@@ -159,7 +158,7 @@
                             <th class="text-end">Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="open-orders-body">
                         {% for order in open_orders %}
                         <tr>
                             <td class="{% if order.order_type == 'bid' %}bid-row{% else %}ask-row{% endif %} fw-semibold">{{ order.order_type|upper }}</td>
@@ -176,11 +175,14 @@
                     </tbody>
                 </table>
             </div>
-            {% else %}
-            <p class="empty-note mb-0 px-3 px-md-4 py-4">No open orders.</p>
-            {% endif %}
         </div>
     </section>
+
+    <div id="no-orders-msg" class="card exchange-card mt-4 {% if open_orders %}d-none{% endif %}">
+        <div class="card-body p-4">
+            <p class="empty-note mb-0">No open orders.</p>
+        </div>
+    </div>
     {% endif %}
     {% else %}
     <section class="card exchange-card">
@@ -203,7 +205,8 @@
         apiUrls: {
             orderBook: "{% url 'exchange:api_order_book' %}",
             placeOrder: "{% url 'exchange:api_place_order' %}",
-            cancelOrder: cancelOrderBaseUrl
+            cancelOrder: cancelOrderBaseUrl,
+            userData: "{% url 'exchange:api_user_data' %}"
         }
     });
 </script>

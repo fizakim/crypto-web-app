@@ -2,7 +2,7 @@ from django.views.generic import TemplateView
 from django.http import JsonResponse
 import json
 
-from .models import Wallet, Transaction
+from .models import Wallet, Transaction as TransactionModel
 from .services import (
     get_blockchain,
     get_all_networks,
@@ -100,11 +100,9 @@ class BlockchainView(TemplateView):
             blocks = chain_snapshot.get('chain', [])
             price_history = get_price_history(active_crypto.symbol, limit=30)
 
-        context['blocks'] = blocks
-        
         # Add pending transactions
         if active_crypto:
-            pending_txs = Transaction.objects.filter(
+            pending_txs = TransactionModel.objects.filter(
                 wallet__cryptocurrency=active_crypto,
                 status='pending'
             ).order_by('-timestamp')
@@ -125,6 +123,82 @@ def get_blocks_api(request):
 
     chain_snapshot = get_chain_snapshot(symbol)
     return JsonResponse(chain_snapshot)
+
+
+def get_explorer_state_api(request):
+    symbol = request.GET.get('network')
+    if not symbol:
+        return JsonResponse({'error': 'Network required'}, status=400)
+
+    cryptos = get_all_networks()
+    active_crypto = cryptos.filter(symbol=symbol).first()
+    if not active_crypto:
+        return JsonResponse({'error': 'Network not found'}, status=404)
+
+    blockchain_mem = get_blockchain(symbol)
+    chain_snapshot = get_chain_snapshot(symbol)
+    blocks = chain_snapshot.get('chain', [])
+    price_history = get_price_history(symbol, limit=30)
+
+    # Build stats
+    latest_block = blocks[-1] if blocks else None
+    total_transactions = sum(len(block.get('transactions', [])) for block in blocks)
+    
+    stats = {
+        'symbol': active_crypto.symbol,
+        'height': latest_block.get('index', 0) if latest_block else 0,
+        'difficulty': latest_block.get('difficulty', active_crypto.initial_difficulty) if latest_block else active_crypto.initial_difficulty,
+        'reward': float(active_crypto.mining_reward),
+        'price': float(active_crypto.current_price),
+        'latest_hash': latest_block.get('block_hash', '') if latest_block else '',
+        'total_blocks': len(blocks),
+        'total_transactions': total_transactions,
+        'utxo_count': len(blockchain_mem.utxo_set) if blockchain_mem else 0,
+    }
+
+    # Pending transactions
+    pending_txs = TransactionModel.objects.filter(
+        wallet__cryptocurrency=active_crypto,
+        status='pending'
+    ).order_by('-timestamp')
+    
+    pending_data = []
+    for tx in pending_txs:
+        pending_data.append({
+            'timestamp': tx.timestamp.strftime('%H:%M:%S'),
+            'tx_id': tx.tx_id,
+            'address': tx.wallet.address[:32] + '...',
+            'status': tx.status
+        })
+
+    # UTXOs
+    utxo_entries = []
+    if blockchain_mem and getattr(blockchain_mem, 'utxo_set', None):
+        utxos = getattr(blockchain_mem.utxo_set, '_utxos', {})
+        for key, output in reversed(list(utxos.items())):
+            if ':' not in key: continue
+            tx_hash, output_index = key.rsplit(':', 1)
+            utxo_entries.append({
+                'tx_hash': tx_hash,
+                'output_index': int(output_index),
+                'recipient_address': (output.recipient_address[:38] + '...') if len(output.recipient_address) > 38 else output.recipient_address,
+                'amount': float(output.amount),
+            })
+
+    # Price chart
+    labels = [p.recorded_at.strftime('%d %b %H:%M') for p in price_history]
+    values = [float(p.price) for p in price_history]
+
+    return JsonResponse({
+        'stats': stats,
+        'recent_blocks': blocks[-12:],
+        'pending_transactions': pending_data,
+        'utxo_entries': utxo_entries,
+        'price_chart': {
+            'labels': labels,
+            'values': values
+        }
+    })
 
 
 class MiningView(TemplateView):
@@ -184,7 +258,7 @@ class TradingView(TemplateView):
         
         # Add pending transactions for the user
         if self.request.user.is_authenticated:
-            pending_txs = Transaction.objects.filter(
+            pending_txs = TransactionModel.objects.filter(
                 wallet__user=self.request.user,
                 status='pending'
             ).order_by('-timestamp')

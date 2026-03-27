@@ -58,39 +58,39 @@
                     <div class="stats-grid">
                         <div class="stat-card">
                             <span class="stat-label">Symbol</span>
-                            <span class="stat-value">{{ stats.symbol }}</span>
+                            <span id="stats-symbol" class="stat-value">{{ stats.symbol }}</span>
                         </div>
                         <div class="stat-card">
                             <span class="stat-label">Height</span>
-                            <span class="stat-value">{{ stats.height }}</span>
+                            <span id="stats-height" class="stat-value">{{ stats.height }}</span>
                         </div>
                         <div class="stat-card">
                             <span class="stat-label">Difficulty</span>
-                            <span class="stat-value">{{ stats.difficulty }}</span>
+                            <span id="stats-difficulty" class="stat-value">{{ stats.difficulty }}</span>
                         </div>
                         <div class="stat-card">
                             <span class="stat-label">Reward</span>
-                            <span class="stat-value">{{ stats.reward }}</span>
+                            <span id="stats-reward" class="stat-value">{{ stats.reward }}</span>
                         </div>
                         <div class="stat-card">
                             <span class="stat-label">Price</span>
-                            <span class="stat-value">&pound;{{ stats.price|floatformat:2 }}</span>
+                            <span id="stats-price" class="stat-value">&pound;{{ stats.price|floatformat:2 }}</span>
                         </div>
                         <div class="stat-card">
                             <span class="stat-label">UTXO Count</span>
-                            <span class="stat-value">{{ stats.utxo_count }}</span>
+                            <span id="stats-utxo-count" class="stat-value">{{ stats.utxo_count }}</span>
                         </div>
                         <div class="stat-card">
                             <span class="stat-label">Total Blocks</span>
-                            <span class="stat-value">{{ stats.total_blocks }}</span>
+                            <span id="stats-total-blocks" class="stat-value">{{ stats.total_blocks }}</span>
                         </div>
                         <div class="stat-card">
                             <span class="stat-label">Transactions</span>
-                            <span class="stat-value">{{ stats.total_transactions }}</span>
+                            <span id="stats-total-transactions" class="stat-value">{{ stats.total_transactions }}</span>
                         </div>
                         <div class="stat-card stat-card-wide">
                             <span class="stat-label">Latest Hash</span>
-                            <span class="stat-value hash-value">
+                            <span id="stats-latest-hash" class="stat-value hash-value">
                                 {% if stats.latest_hash %}
                                     {{ stats.latest_hash }}
                                 {% else %}
@@ -111,8 +111,7 @@
                 <p class="mb-0 panel-subtitle">{{ active_crypto.name }} persisted chain data</p>
             </div>
 
-            {% if recent_blocks %}
-            <div class="blocks-strip px-3 px-md-4 pb-3 pt-3">
+            <div id="blocks-container" class="blocks-strip px-3 px-md-4 pb-3 pt-3">
                 {% for block in recent_blocks %}
                 <article class="block-card">
                     <div class="block-card-title">Block #{{ block.index }}</div>
@@ -155,11 +154,9 @@
                 {% endif %}
                 {% endfor %}
             </div>
-            {% else %}
-            <div class="empty-state px-3 px-md-4 py-4">
-                <p class="mb-0">No persisted blocks exist yet for {{ active_crypto.name }}.</p>
+            <div id="no-blocks-msg" class="empty-state px-3 px-md-4 py-4 d-none">
+                <p class="mb-0">No persisted blocks exist yet.</p>
             </div>
-            {% endif %}
         </div>
     </section>
 
@@ -170,8 +167,7 @@
                 <p class="mb-0 panel-subtitle">Unconfirmed transactions waiting for next block</p>
             </div>
 
-            {% if pending_transactions %}
-            <div class="table-responsive">
+            <div class="table-responsive {% if not pending_transactions %}d-none{% endif %}" id="mempool-table-container">
                 <table class="table align-middle table-hover mb-0 modern-table mempool-table">
                     <thead>
                         <tr>
@@ -181,7 +177,7 @@
                             <th class="text-end">Status</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="mempool-body">
                         {% for tx in pending_transactions %}
                         <tr>
                             <td>{{ tx.timestamp|date:"H:i:s" }}</td>
@@ -193,9 +189,9 @@
                     </tbody>
                 </table>
             </div>
-            {% else %}
-            <p class="empty-note mb-0 px-3 px-md-4 py-4 text-center">Memory pool is currently empty.</p>
-            {% endif %}
+            <div id="mempool-empty-msg" class="empty-note mb-0 px-3 px-md-4 py-4 text-center {% if pending_transactions %}d-none{% endif %}">
+                Memory pool is currently empty.
+            </div>
         </div>
     </section>
 
@@ -206,8 +202,7 @@
                 <p class="mb-0 panel-subtitle">Spendable outputs currently available on {{ active_crypto.symbol }}</p>
             </div>
 
-            {% if utxo_entries %}
-            <div class="table-responsive">
+            <div class="table-responsive {% if not utxo_entries %}d-none{% endif %}" id="utxo-table-container">
                 <table class="table align-middle table-hover mb-0 modern-table utxo-table">
                     <thead>
                         <tr>
@@ -217,7 +212,7 @@
                             <th class="text-end">Amount</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="utxo-body">
                         {% for utxo in utxo_entries %}
                         <tr>
                             <td class="mono-hash">{{ utxo.tx_hash }}</td>
@@ -229,9 +224,9 @@
                     </tbody>
                 </table>
             </div>
-            {% else %}
-            <p class="empty-note mb-0 px-3 px-md-4 py-4 text-center">No unspent transaction outputs are available.</p>
-            {% endif %}
+            <div id="utxo-empty-msg" class="empty-note mb-0 px-3 px-md-4 py-4 text-center {% if utxo_entries %}d-none{% endif %}">
+                No unspent transaction outputs are available.
+            </div>
         </div>
     </section>
     {% endif %}
@@ -242,5 +237,17 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{% static 'crypto/js/blockchain_viewer.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof BlockchainExplorer !== 'undefined') {
+            BlockchainExplorer.init({
+                symbol: "{{ active_crypto.symbol }}",
+                apiUrl: "{% url 'crypto:api_explorer_state' %}"
+            });
+        }
+    });
+</script>
 {% endblock %}

@@ -95,3 +95,41 @@ def order_book_api(request):
         
     book = get_order_book(symbol)
     return JsonResponse(book)
+
+def get_exchange_user_data_api(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Login required'}, status=401)
+        
+    symbol = request.GET.get('network')
+    if not symbol:
+        return JsonResponse({'error': 'Network required'}, status=400)
+        
+    from crypto.models import Cryptocurrency
+    crypto = Cryptocurrency.objects.filter(symbol=symbol).first()
+    
+    crypto_balance = 0
+    if crypto:
+        crypto_balance = get_user_crypto_balance(request.user, symbol)
+        
+    open_orders = Order.objects.filter(
+        user=request.user, 
+        cryptocurrency=crypto,
+        status='open'
+    ).order_by('-created_at')
+    
+    orders_data = []
+    for o in open_orders:
+        orders_data.append({
+            'id': o.id,
+            'order_type': o.order_type,
+            'price': float(o.price),
+            'amount': float(o.amount),
+            'filled_amount': float(o.filled_amount),
+            'created_at': o.created_at.strftime('%b %d, %H:%M:%S')
+        })
+        
+    return JsonResponse({
+        'fiat_balance': float(request.user.profile.balance),
+        'crypto_balance': float(crypto_balance),
+        'open_orders': orders_data
+    })
