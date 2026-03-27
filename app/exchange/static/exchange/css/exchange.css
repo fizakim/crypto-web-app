@@ -19,28 +19,35 @@
 }
 
 .exchange-page .stat-chip {
-    min-width: 150px;
-    padding: 0.65rem 0.8rem;
+    padding: 1.25rem;
     border: 1px solid var(--border-color);
-    border-radius: 10px;
-    background-color: var(--bg-card);
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.03);
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.exchange-page .stat-chip:hover {
+    border-color: var(--accent-color);
+    background-color: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
 }
 
 .exchange-page .stat-chip-label {
-    font-size: 0.76rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
+    font-weight: 500;
 }
 
 .exchange-page .stat-chip-value {
-    font-size: 1rem;
+    font-size: 1.4rem;
     font-weight: 700;
     color: var(--text-main);
-    line-height: 1.25;
+    line-height: 1.2;
 }
 
 .exchange-page .stat-chip-value-price {
@@ -203,11 +210,6 @@
 @media (max-width: 991.98px) {
     .exchange-page .market-stats {
         width: 100%;
-        justify-content: flex-start;
-    }
-
-    .exchange-page .stat-chip {
-        flex: 1 1 180px;
     }
 }
 
