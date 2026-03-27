@@ -17,8 +17,7 @@
             <form action="" method="get" class="network-form" id="network-form">
                 <select name="network" id="network-select" class="network-dropdown">
                     {% for crypto in cryptocurrencies %}
-                    <option value="{{ crypto.symbol }}" {% if active_crypto and active_crypto.id==crypto.id %}selected{%
-                        endif %} data-name="{{ crypto.name }}">
+                    <option value="{{ crypto.symbol }}" {% if active_crypto and active_crypto.id == crypto.id %}selected{% endif %} data-name="{{ crypto.name }}">
                         {{ crypto.name }} ({{ crypto.symbol }})
                     </option>
                     {% endfor %}
