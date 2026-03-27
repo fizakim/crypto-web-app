@@ -1,0 +1,7 @@
+{
+    "name": "Solana",
+    "symbol": "SOL",
+    "decimals": 9,
+    "mining_reward": 1.0,
+    "initial_difficulty": 3010
+}

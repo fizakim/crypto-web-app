@@ -1,0 +1,7 @@
+{
+    "name": "Ripple",
+    "symbol": "XRP",
+    "decimals": 6,
+    "mining_reward": 50.0,
+    "initial_difficulty": 101
+}

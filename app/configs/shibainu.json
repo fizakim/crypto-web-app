@@ -1,0 +1,7 @@
+{
+    "name": "Shiba Inu",
+    "symbol": "SHIB",
+    "decimals": 18,
+    "mining_reward": 5000000.0,
+    "initial_difficulty": 151
+}

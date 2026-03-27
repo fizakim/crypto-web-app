@@ -1,0 +1,7 @@
+{
+    "name": "Cardano",
+    "symbol": "ADA",
+    "decimals": 6,
+    "mining_reward": 2.0,
+    "initial_difficulty": 401
+}

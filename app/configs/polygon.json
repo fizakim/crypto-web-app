@@ -1,0 +1,7 @@
+{
+    "name": "Polygon",
+    "symbol": "MATIC",
+    "decimals": 18,
+    "mining_reward": 20.0,
+    "initial_difficulty": 501
+}

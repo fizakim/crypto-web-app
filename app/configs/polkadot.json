@@ -1,0 +1,7 @@
+{
+    "name": "Polkadot",
+    "symbol": "DOT",
+    "decimals": 10,
+    "mining_reward": 5.0,
+    "initial_difficulty": 451
+}

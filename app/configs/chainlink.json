@@ -1,0 +1,7 @@
+{
+    "name": "Chainlink",
+    "symbol": "LINK",
+    "decimals": 18,
+    "mining_reward": 10.0,
+    "initial_difficulty": 551
+}

@@ -1,0 +1,7 @@
+{
+    "name": "Dogecoin",
+    "symbol": "DOGE",
+    "decimals": 8,
+    "mining_reward": 10000.0,
+    "initial_difficulty": 2010
+}

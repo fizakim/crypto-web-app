@@ -3,5 +3,5 @@
     "symbol": "LTC",
     "decimals": 8,
     "mining_reward": 25.0,
-    "initial_difficulty": 800
+    "initial_difficulty": 8000
 }

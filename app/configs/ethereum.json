@@ -3,5 +3,5 @@
     "symbol": "ETH",
     "decimals": 18,
     "mining_reward": 2.0,
-    "initial_difficulty": 500
+    "initial_difficulty": 5000
 }
