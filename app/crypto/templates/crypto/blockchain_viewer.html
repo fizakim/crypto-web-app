@@ -5,17 +5,19 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'crypto/css/crypto.css' %}">
+<link rel="stylesheet" href="{% static 'crypto/css/blockchain.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="explorer-header-row">
-        <h2>Blockchain Explorer</h2>
+<div class="container py-4 py-lg-5 blockchain-page">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <h1 class="h3 mb-0">Blockchain Explorer</h1>
 
-        <div class="network-selector">
+        <div class="network-selector mb-0">
             {% if cryptocurrencies %}
-            <form action="" method="get" class="network-form" id="network-form">
-                <select name="network" id="network-select" class="network-dropdown">
+            <form action="" method="get" class="network-form d-flex align-items-center gap-2" id="network-form">
+                <label for="network-select" class="form-label mb-0 network-label">Network</label>
+                <select name="network" id="network-select" class="form-select network-dropdown">
                     {% for crypto in cryptocurrencies %}
                     <option value="{{ crypto.symbol }}" {% if active_crypto and active_crypto.id == crypto.id %}selected{% endif %}>
                         {{ crypto.name }} ({{ crypto.symbol }})
@@ -24,124 +26,94 @@
                 </select>
             </form>
             {% else %}
-            <div class="empty-state">
-                <p>No cryptocurrencies</p>
-            </div>
+            <p class="empty-note mb-0">No cryptocurrencies</p>
             {% endif %}
         </div>
     </div>
 
     {% if active_crypto %}
-    <div class="explorer-grid">
-        <section class="card explorer-panel">
-            <div class="panel-heading">
-                <h3>Price History</h3>
-                <p>{{ active_crypto.name }} market price</p>
-            </div>
-            <div class="chart-shell">
-                <canvas id="priceHistoryChart"></canvas>
-            </div>
-        </section>
+    <div class="row g-4 align-items-stretch mb-4">
+        <div class="col-12 col-xl-7">
+            <section class="card h-100 explorer-panel">
+                <div class="card-body p-3 p-md-4 d-flex flex-column">
+                    <div class="panel-heading mb-3">
+                        <h2 class="h5 mb-1">Price History</h2>
+                        <p class="mb-0">{{ active_crypto.name }} market price</p>
+                    </div>
+                    <div class="chart-shell">
+                        <canvas id="priceHistoryChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </div>
 
-        <section class="card explorer-panel">
-            <div class="panel-heading">
-                <h3>Network Stats</h3>
-                <p>{{ active_crypto.name }} live overview</p>
-            </div>
+        <div class="col-12 col-xl-5">
+            <section class="card h-100 explorer-panel">
+                <div class="card-body p-3 p-md-4 d-flex flex-column">
+                    <div class="panel-heading mb-3">
+                        <h2 class="h5 mb-1">Network Stats</h2>
+                        <p class="mb-0">{{ active_crypto.name }} live overview</p>
+                    </div>
 
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <span class="stat-label">Symbol</span>
-                    <span class="stat-value">{{ stats.symbol }}</span>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-label">Symbol</span>
+                            <span class="stat-value">{{ stats.symbol }}</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Height</span>
+                            <span class="stat-value">{{ stats.height }}</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Difficulty</span>
+                            <span class="stat-value">{{ stats.difficulty }}</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Reward</span>
+                            <span class="stat-value">{{ stats.reward }}</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Price</span>
+                            <span class="stat-value">&pound;{{ stats.price|floatformat:2 }}</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">UTXO Count</span>
+                            <span class="stat-value">{{ stats.utxo_count }}</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Total Blocks</span>
+                            <span class="stat-value">{{ stats.total_blocks }}</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Transactions</span>
+                            <span class="stat-value">{{ stats.total_transactions }}</span>
+                        </div>
+                        <div class="stat-card stat-card-wide">
+                            <span class="stat-label">Latest Hash</span>
+                            <span class="stat-value hash-value">
+                                {% if stats.latest_hash %}
+                                    {{ stats.latest_hash }}
+                                {% else %}
+                                    No blocks yet
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-label">Height</span>
-                    <span class="stat-value">{{ stats.height }}</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">Difficulty</span>
-                    <span class="stat-value">{{ stats.difficulty }}</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">Reward</span>
-                    <span class="stat-value">{{ stats.reward }}</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">Price</span>
-                    <span class="stat-value">£{{ stats.price|floatformat:2 }}</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">UTXO Count</span>
-                    <span class="stat-value">{{ stats.utxo_count }}</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">Total Blocks</span>
-                    <span class="stat-value">{{ stats.total_blocks }}</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">Transactions</span>
-                    <span class="stat-value">{{ stats.total_transactions }}</span>
-                </div>
-                <div class="stat-card stat-card-wide">
-                    <span class="stat-label">Latest Hash</span>
-                    <span class="stat-value hash-value">
-                        {% if stats.latest_hash %}
-                            {{ stats.latest_hash }}
-                        {% else %}
-                            No blocks yet
-                        {% endif %}
-                    </span>
-                </div>
-            </div>
-        </section>
+            </section>
+        </div>
     </div>
 
-    <section class="card explorer-panel" style="margin-top: var(--spacing-lg);">
-        <div class="panel-heading">
-            <h3>Mempool (Pending)</h3>
-            <p>Unconfirmed transactions waiting for next block</p>
-        </div>
-        <div class="mempool-container" style="overflow-x: auto;">
-            {% if pending_transactions %}
-                <table style="width: 100%; border-collapse: collapse; margin-top: var(--spacing-sm);">
-                    <thead>
-                        <tr style="text-align: left; border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.85rem;">
-                            <th style="padding: 12px 8px;">Time</th>
-                            <th style="padding: 12px 8px;">Transaction Hash</th>
-                            <th style="padding: 12px 8px;">Sender Address</th>
-                            <th style="padding: 12px 8px;">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for tx in pending_transactions %}
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                            <td style="padding: 12px 8px; font-size: 0.9rem;">{{ tx.timestamp|date:"H:i:s" }}</td>
-                            <td style="padding: 12px 8px; font-family: monospace; font-size: 0.8rem; color: var(--accent-color);">{{ tx.tx_id }}</td>
-                            <td style="padding: 12px 8px; font-family: monospace; font-size: 0.8rem;">{{ tx.wallet.address|truncatechars:32 }}</td>
-                            <td style="padding: 12px 8px;"><span class="badge badge-pending" style="color: var(--accent-color); border: 1px solid var(--accent-color); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase;">{{ tx.status }}</span></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p style="color: var(--text-muted); padding: var(--spacing-lg); text-align: center;">Memory pool is currently empty.</p>
-            {% endif %}
-        </div>
-    </section>
-
     <section class="card explorer-panel blocks-panel">
-        <div class="panel-heading">
-            <h3>Recent Blocks</h3>
-            <p>{{ active_crypto.name }} persisted chain data</p>
-        </div>
+        <div class="card-body p-0 d-flex flex-column">
+            <div class="px-3 px-md-4 py-3 border-bottom border-secondary-subtle">
+                <h2 class="h5 mb-1">Recent Blocks</h2>
+                <p class="mb-0 panel-subtitle">{{ active_crypto.name }} persisted chain data</p>
+            </div>
 
-        {% if recent_blocks %}
-        <div class="blocks-strip">
-            {% for block in recent_blocks %}
-                {% if not forloop.first %}
-                <div class="block-arrow">→</div>
-                {% endif %}
-
+            {% if recent_blocks %}
+            <div class="blocks-strip px-3 px-md-4 pb-3 pt-3">
+                {% for block in recent_blocks %}
                 <article class="block-card">
                     <div class="block-card-title">Block #{{ block.index }}</div>
 
@@ -175,13 +147,92 @@
                         <span class="block-hash">{{ block.previous_hash|truncatechars:28 }}</span>
                     </div>
                 </article>
-            {% endfor %}
+                {% if not forloop.last %}
+                <div class="block-arrow" aria-hidden="true">
+                    <span class="block-arrow-line"></span>
+                    <span class="block-arrow-head"></span>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state px-3 px-md-4 py-4">
+                <p class="mb-0">No persisted blocks exist yet for {{ active_crypto.name }}.</p>
+            </div>
+            {% endif %}
         </div>
-        {% else %}
-        <div class="empty-state">
-            <p>No persisted blocks exist yet for {{ active_crypto.name }}.</p>
+    </section>
+
+    <section class="card explorer-panel mb-4 mt-4">
+        <div class="card-body p-0 d-flex flex-column">
+            <div class="px-3 px-md-4 py-3 border-bottom border-secondary-subtle">
+                <h2 class="h5 mb-1">Mempool (Pending)</h2>
+                <p class="mb-0 panel-subtitle">Unconfirmed transactions waiting for next block</p>
+            </div>
+
+            {% if pending_transactions %}
+            <div class="table-responsive">
+                <table class="table align-middle table-hover mb-0 modern-table mempool-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Transaction Hash</th>
+                            <th>Sender Address</th>
+                            <th class="text-end">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tx in pending_transactions %}
+                        <tr>
+                            <td>{{ tx.timestamp|date:"H:i:s" }}</td>
+                            <td class="mono-hash">{{ tx.tx_id }}</td>
+                            <td class="mono-hash">{{ tx.wallet.address|truncatechars:32 }}</td>
+                            <td class="text-end"><span class="status-pill">{{ tx.status }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="empty-note mb-0 px-3 px-md-4 py-4 text-center">Memory pool is currently empty.</p>
+            {% endif %}
         </div>
-        {% endif %}
+    </section>
+
+    <section class="card explorer-panel mb-4">
+        <div class="card-body p-0 d-flex flex-column">
+            <div class="px-3 px-md-4 py-3 border-bottom border-secondary-subtle">
+                <h2 class="h5 mb-1">UTXO Set</h2>
+                <p class="mb-0 panel-subtitle">Spendable outputs currently available on {{ active_crypto.symbol }}</p>
+            </div>
+
+            {% if utxo_entries %}
+            <div class="table-responsive">
+                <table class="table align-middle table-hover mb-0 modern-table utxo-table">
+                    <thead>
+                        <tr>
+                            <th>Transaction Hash</th>
+                            <th class="text-center">Index</th>
+                            <th>Recipient Address</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for utxo in utxo_entries %}
+                        <tr>
+                            <td class="mono-hash">{{ utxo.tx_hash }}</td>
+                            <td class="text-center">{{ utxo.output_index }}</td>
+                            <td class="mono-hash">{{ utxo.recipient_address|truncatechars:38 }}</td>
+                            <td class="text-end amount-cell">{{ utxo.amount|floatformat:8 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="empty-note mb-0 px-3 px-md-4 py-4 text-center">No unspent transaction outputs are available.</p>
+            {% endif %}
+        </div>
     </section>
     {% endif %}
 </div>

@@ -1,231 +1,73 @@
-.ao-wrapper {
-    width: 90%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 30px 20px 60px;
+.account-overview {
+    max-width: 1100px;
 }
 
-.ao-header {
-    margin-bottom: 28px;
-}
-
-.ao-header h1 {
-    font-size: 28px;
-    font-weight: 700;
-    margin: 0 0 4px;
-}
-
-.ao-header .ao-subtitle {
+.ao-subtitle {
     color: var(--text-muted);
-    font-size: 14px;
+    font-size: 0.95rem;
 }
 
-.ao-stats-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
-    margin-bottom: 28px;
-}
-
-.ao-stat-card {
+.account-overview .card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    padding: 22px 20px;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 0;
 }
 
-.ao-stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    border-radius: 12px 12px 0 0;
-}
-
-.ao-stat-card:nth-child(1)::before {
-    background: var(--accent-color);
-}
-
-.ao-stat-card:nth-child(2)::before {
-    background: var(--success-color);
-}
-
-.ao-stat-card:nth-child(3)::before {
-    background: #c4a0ff;
-}
-
-.ao-stat-card:nth-child(4)::before {
-    background: #ffcf70;
-}
-
-.ao-stat-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+.ao-stat-card .card-body {
+    padding: 1.25rem 1.4rem;
 }
 
 .ao-stat-label {
-    font-size: 13px;
+    font-size: 0.75rem;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.6px;
-    margin-bottom: 8px;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
 }
 
 .ao-stat-value {
-    font-size: 26px;
+    font-size: clamp(1.5rem, 2.7vw, 2rem);
+    line-height: 1.2;
     font-weight: 700;
 }
 
-.ao-stat-card:nth-child(1) .ao-stat-value {
+.ao-stat-wallet .ao-stat-value {
     color: var(--accent-color);
 }
 
-.ao-stat-card:nth-child(2) .ao-stat-value {
+.ao-stat-cash .ao-stat-value {
     color: var(--success-color);
 }
 
-.ao-stat-card:nth-child(3) .ao-stat-value {
-    color: #c4a0ff;
-}
-
-.ao-stat-card:nth-child(4) .ao-stat-value {
-    color: #ffcf70;
-}
-
-/* ── Content Panels ── */
-.ao-content-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-    margin-bottom: 28px;
-}
-
-.ao-panel {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 22px 20px;
-}
-
-.ao-panel-title {
-    font-size: 17px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    padding-bottom: 10px;
+.ao-wallet-card .card-header {
+    background: transparent;
     border-bottom: 1px solid var(--border-color);
+    padding: 1rem 1.25rem;
 }
 
-/* ── Holdings Table ── */
-.ao-holdings-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.ao-holdings-table th {
-    text-align: left;
-    font-size: 12px;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 0 0 10px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.ao-holdings-table td {
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(74, 74, 74, 0.35);
-    font-size: 14px;
-}
-
-.ao-holdings-table tr:last-child td {
-    border-bottom: none;
-}
-
-.ao-symbol {
-    color: var(--accent-color);
-    font-weight: 600;
-}
-
-/* ── Snapshot List ── */
-.ao-snapshot-list {
-    list-style: none;
+.ao-wallet-card .card-body {
     padding: 0;
-    margin: 0;
-}
-
-.ao-snapshot-list li {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 12px;
-    background: var(--bg-card-alt);
-    border-radius: 8px;
-    margin-bottom: 8px;
-    font-size: 14px;
-    transition: background 0.15s ease;
-}
-
-.ao-snapshot-list li:hover {
-    background: var(--bg-input);
-}
-
-.ao-snapshot-list li:last-child {
-    margin-bottom: 0;
-}
-
-.ao-snapshot-value {
-    color: var(--success-color);
-    font-weight: 600;
-}
-
-/* ── Wallet Section ── */
-.ao-wallet-section {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 22px 20px;
-    margin-bottom: 28px;
-}
-
-.ao-wallet-section .ao-panel-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.ao-wallet-section .ao-panel-title::before {
-    content: '🔑';
-    font-size: 18px;
 }
 
 .ao-wallet-table {
-    width: 100%;
-    border-collapse: collapse;
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text-main);
+    --bs-table-border-color: rgba(74, 74, 74, 0.35);
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.03);
+    margin-bottom: 0;
 }
 
 .ao-wallet-table th {
-    text-align: left;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 0 8px 12px 0;
-    border-bottom: 1px solid var(--border-color);
+    letter-spacing: 0.05em;
+    border-bottom-width: 1px;
 }
 
 .ao-wallet-table td {
-    padding: 14px 8px 14px 0;
-    border-bottom: 1px solid rgba(74, 74, 74, 0.35);
-    font-size: 14px;
-    vertical-align: middle;
-}
-
-.ao-wallet-table tr:last-child td {
-    border-bottom: none;
+    font-size: 0.9rem;
 }
 
 .ao-crypto-name {
@@ -234,53 +76,40 @@
     gap: 2px;
 }
 
-.ao-crypto-name strong {
-    color: var(--text-main);
-}
-
 .ao-crypto-name small {
     color: var(--text-muted);
-    font-size: 12px;
+    font-size: 0.78rem;
 }
 
-/* ── Key / Address Cells ── */
 .ao-key-cell {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 0.4rem;
+    flex-wrap: wrap;
 }
 
-.ao-key-text {
+.ao-key-text,
+.ao-hidden-key {
     font-family: 'Courier New', Courier, monospace;
-    font-size: 13px;
+    font-size: 0.8rem;
     color: var(--text-muted);
     background: var(--bg-input);
-    padding: 4px 8px;
+    border: 1px solid var(--border-color);
+    padding: 0.25rem 0.5rem;
     border-radius: 6px;
-    max-width: 220px;
+    max-width: 240px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.ao-copy-btn,
-.ao-reveal-btn {
-    background: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 12px;
-    transition: all 0.15s ease;
-    white-space: nowrap;
+.ao-hidden-key {
+    letter-spacing: 0.12em;
 }
 
-.ao-copy-btn:hover,
-.ao-reveal-btn:hover {
-    background: var(--bg-input);
-    color: var(--text-main);
-    border-color: var(--text-muted);
+.ao-copy-btn,
+.ao-reveal-btn {
+    min-width: 58px;
 }
 
 .ao-copy-btn.copied {
@@ -288,88 +117,35 @@
     border-color: var(--success-color);
 }
 
-.ao-hidden-key {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 13px;
-    color: var(--text-muted);
-    background: var(--bg-input);
-    padding: 4px 8px;
-    border-radius: 6px;
-    letter-spacing: 2px;
-}
-
 .ao-balance-chip {
-    background: rgba(125, 255, 179, 0.1);
+    background: rgba(125, 255, 179, 0.12);
+    border: 1px solid rgba(125, 255, 179, 0.35);
     color: var(--success-color);
-    padding: 4px 10px;
-    border-radius: 20px;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
     font-weight: 600;
-    font-size: 13px;
     display: inline-block;
 }
 
-/* ── Empty State ── */
 .ao-empty {
     color: var(--text-muted);
     font-style: italic;
-    padding: 18px 0;
-    text-align: center;
+    padding: 1rem 1.25rem;
 }
 
-/* ── Action Buttons ── */
-.ao-actions {
-    display: flex;
-    gap: 14px;
-    justify-content: center;
-    flex-wrap: wrap;
+.ao-actions .btn {
+    min-width: 130px;
 }
 
-.ao-action-btn {
-    padding: 10px 24px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background: var(--bg-card);
-    color: var(--text-main);
-    text-decoration: none;
-    font-size: 14px;
-    transition: all 0.2s ease;
-}
-
-.ao-action-btn:hover {
-    background: var(--bg-input);
-    border-color: var(--accent-color);
-    color: var(--accent-color);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.ao-action-btn.ao-danger:hover {
-    border-color: var(--danger-color);
-    color: var(--danger-color);
-}
-
-/* ── Responsive ── */
-@media (max-width: 900px) {
-    .ao-stats-row {
-        grid-template-columns: repeat(2, 1fr);
+@media (max-width: 767.98px) {
+    .account-overview {
+        padding-left: 12px;
+        padding-right: 12px;
     }
 
-    .ao-content-row {
-        grid-template-columns: 1fr;
-    }
-
-    .ao-wallet-table {
-        display: block;
-        overflow-x: auto;
-    }
-}
-
-@media (max-width: 500px) {
-    .ao-stats-row {
-        grid-template-columns: 1fr;
-    }
-
-    .ao-wrapper {
-        padding: 16px 12px 40px;
+    .ao-key-text,
+    .ao-hidden-key {
+        max-width: 100%;
     }
 }

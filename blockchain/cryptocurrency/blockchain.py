@@ -14,6 +14,7 @@ class Blockchain:
         self.utxo_set = UTXOSet(config=self.config)
         self.mempool = Mempool()
 
+        # setup the very first block
         genesis_transactions = []
         if genesis_address:
             tx = Transaction(
@@ -29,15 +30,18 @@ class Blockchain:
             self.utxo_set.apply_transaction(tx)
 
     def to_json(self):
+        # helper to convert chain to something we can send over json
         return {
-            "difficulty": self.difficulty,
+            "difficulty" : self.difficulty, # difficulty level
             "chain": [block.to_json() for block in self.chain]
         }
 
     def adjust_difficulty(self):
+        # for now just keep it static
         return self.difficulty
 
     def get_last_block(self):
+        # helper to get the tip of the chain
         return self.chain[-1]
 
     def get_balance(self, address):
@@ -47,48 +51,47 @@ class Blockchain:
         self.mempool.add_transaction(transaction, self.utxo_set)
 
     def get_block_template(self, miner_address=None):
-        if miner_address is None:
-            raise ValueError("Miner address is required to receive the mining reward")
+        if not miner_address:
+            raise ValueError("Need a miner address for the reward!!")
 
-        transactions_to_mine = []
-        total_fees = 0
+        to_mine = []
+        fees = 0
         
-        # Filter valid transactions
+        # go through the mempool and pick out valid transactions
         for tx in self.mempool.get_transactions():
             try:
                 self.utxo_set.verify_transaction(tx)
                 
-                # Check for double-spend
+                # prevent double spending
                 input_sum = 0
-                is_double_spend = False
                 for inp in tx.inputs:
                     utxo = self.utxo_set.get(inp.prev_tx_hash, inp.output_index)
                     input_sum += utxo.amount
                     
                 output_sum = sum(out.amount for out in tx.outputs)
-                total_fees += (input_sum - output_sum)
-                transactions_to_mine.append(tx)
+                fees += (input_sum - output_sum)
+                to_mine.append(tx)
             except Exception:
-                # Skip invalid
+                # ignore bad ones
                 continue
 
         last_block = self.get_last_block()
-        next_index = last_block.index + 1
+        next_idx = last_block.index + 1
         
-        # Create coinbase transaction hash
-        reward_tx_hash = sha256_hash(f"coinbase_{next_index}_{int(time.time())}_{miner_address}".encode())
+        # make the coinbase transaction for the miner
+        reward_hash = sha256_hash(f"coinbase_{next_idx}_{int(time.time())}_{miner_address}".encode())
         reward_tx = Transaction(
-            tx_hash=reward_tx_hash,
+            tx_hash=reward_hash,
             inputs=[],
-            outputs=[TxOutput(miner_address, self.config.mining_reward + total_fees)]
+            outputs=[TxOutput(miner_address, self.config.mining_reward + fees)]
         )
 
-        transactions_to_mine.insert(0, reward_tx)
+        to_mine.insert(0, reward_tx)
 
         new_block = Block(
-            index=next_index,
+            index=next_idx,
             timestamp=int(time.time()),
-            transactions=transactions_to_mine,
+            transactions=to_mine,
             previous_hash=last_block.compute_hash(),
             difficulty=self.difficulty
         )
@@ -96,44 +99,48 @@ class Blockchain:
         return new_block
 
     def submit_block(self, block):
+        # check if they actually did the proof of work
         target = (1 << 256) // block.difficulty
         if int(block.compute_hash(), 16) > target:
-            raise ValueError("Block hash does not meet difficulty target")
+            raise ValueError("Hash is too high, work not done")
             
         last_block = self.get_last_block()
         if block.previous_hash != last_block.compute_hash():
-            raise ValueError("Block previous hash does not match current chain tip")
+            raise ValueError("Previous hash doesn't match the tip")
 
+        # update the utxos with the new transactions
         for tx in block.transactions:
             self.utxo_set.apply_transaction(tx)
             
         self.chain.append(block)
+        # clean up the mempool
         self.mempool.remove_mined_transactions(block)
         
         return block
 
     def is_chain_valid(self):
-        verification_utxo_set = UTXOSet(config=self.config)
+        # build a temporary utxo set to verify everything from scratch
+        verify_utxos = UTXOSet(config=self.config)
 
         for i in range(len(self.chain)):
             current = self.chain[i]
 
             target = (1 << 256) // current.difficulty
             if int(current.compute_hash(), 16) > target:
-                print(f"Validation failed: Block {i} hash does not meet difficulty target.")
+                print(f"FAILED: Block {i} hash is wrong.")
                 return False
                 
             if i > 0:
                 previous = self.chain[i - 1]
                 if current.previous_hash != previous.compute_hash():
-                    print(f"Validation failed: Block {i} previous hash does not match Block {i-1}.")
+                    print(f"FAILED: Block {i} prev hash mismatch.")
                     return False
                     
             try:
                 for tx in current.transactions:
-                    verification_utxo_set.apply_transaction(tx)
+                    verify_utxos.apply_transaction(tx)
             except ValueError as e:
-                print(f"Validation failed at Block {i}: {e}")
+                print(f"FAILED at Block {i}: {e}")
                 return False
                 
         return True

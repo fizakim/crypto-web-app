@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             bodyColor: '#ffffff',
                             callbacks: {
                                 label: function (context) {
-                                    return '£' + Number(context.parsed.y).toFixed(2);
+                                    return '\u00A3' + Number(context.parsed.y).toFixed(2);
                                 }
                             }
                         }
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             ticks: {
                                 color: '#bfbfbf',
                                 callback: function (value) {
-                                    return '£' + Number(value).toFixed(2);
+                                    return '\u00A3' + Number(value).toFixed(2);
                                 }
                             }
                         }

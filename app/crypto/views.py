@@ -22,6 +22,7 @@ class BlockchainView(TemplateView):
             return {
                 'stats': {},
                 'recent_blocks': [],
+                'utxo_entries': [],
                 'price_chart_labels': [],
                 'price_chart_values': [],
             }
@@ -52,9 +53,24 @@ class BlockchainView(TemplateView):
             for point in price_history
         ]
 
+        utxo_entries = []
+        if blockchain_mem and getattr(blockchain_mem, 'utxo_set', None):
+            utxos = getattr(blockchain_mem.utxo_set, '_utxos', {})
+            for key, output in reversed(list(utxos.items())):
+                if ':' not in key:
+                    continue
+                tx_hash, output_index = key.rsplit(':', 1)
+                utxo_entries.append({
+                    'tx_hash': tx_hash,
+                    'output_index': int(output_index),
+                    'recipient_address': output.recipient_address,
+                    'amount': output.amount,
+                })
+
         return {
             'stats': stats,
-            'recent_blocks': list(reversed(blocks[-12:])),
+            'recent_blocks': blocks[-12:],
+            'utxo_entries': utxo_entries,
             'price_chart_labels': price_chart_labels,
             'price_chart_values': price_chart_values,
         }

@@ -46,43 +46,43 @@
                             style="display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: var(--spacing-sm); border-bottom: 1px solid var(--border-color);">
                             <div>
                                 <p
-                                    style="margin-bottom: 2px; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.5px;">
+                                    style="margin-bottom: 2px; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; font-weight: 500; letter-spacing: 1px;">
                                     Difficulty</p>
                                 <p id="mining-difficulty"
-                                    style="font-size: 1.5rem; font-weight: bold; color: var(--accent-color); line-height: 1;">
+                                    style="font-size: 1.8rem; font-weight: bold; color: var(--accent-color); line-height: 1; font-family: 'Courier New', Courier, monospace;">
                                     --</p>
                             </div>
                             <div style="text-align: right;">
                                 <p
-                                    style="margin-bottom: 2px; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.5px;">
+                                    style="margin-bottom: 2px; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; font-weight: 500; letter-spacing: 1px;">
                                     Blocks Mined</p>
                                 <p id="blocks-mined"
-                                    style="font-size: 1.5rem; font-weight: bold; color: var(--text-main); line-height: 1;">
+                                    style="font-size: 1.8rem; font-weight: bold; color: var(--success-color); line-height: 1; font-family: 'Courier New', Courier, monospace;">
                                     0</p>
                             </div>
                         </div>
 
                         <div style="padding-bottom: var(--spacing-sm); border-bottom: 1px solid var(--border-color);">
                             <p
-                                style="margin-bottom: 4px; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.5px;">
+                                style="margin-bottom: 4px; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; font-weight: 500; letter-spacing: 1px;">
                                 Last Nonce Found</p>
                             <p id="last-nonce-mined"
-                                style="font-size: 1.1rem; font-weight: 600; color: var(--text-main); font-family: monospace;">
+                                style="font-size: 1.2rem; font-weight: 600; color: var(--text-main); font-family: 'Courier New', Courier, monospace; background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 4px;">
                                 --</p>
                         </div>
 
                         <div>
                             <p
-                                style="margin-bottom: 4px; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.5px;">
+                                style="margin-bottom: 4px; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; font-weight: 500; letter-spacing: 1px;">
                                 Last Hash Found</p>
                             <p id="last-hash-mined"
-                                style="font-size: 0.8rem; color: var(--text-muted); font-family: monospace; word-break: break-all; line-height: 1.4;">
+                                style="font-size: 0.85rem; color: var(--accent-color); font-family: 'Courier New', Courier, monospace; word-break: break-all; line-height: 1.4; opacity: 0.9;">
                                 --</p>
                         </div>
                     </div>
                 </div>
             </div>
-            <button class="btn btn-start-mining" id="btn-start-mining">START MINING</button>
+            <button class="btn btn-start-mining" id="btn-start-mining" style="background: var(--accent-color); color: #000; border: none; font-weight: bold; letter-spacing: 2px; transition: all 0.2s;">START MINING</button>
         </div>
 
         <!-- Right Column -->
@@ -92,32 +92,32 @@
                 <div
                     style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
                     <h3
-                        style="color: var(--text-muted); font-size: 1rem; text-transform: uppercase; letter-spacing: 1.5px; margin: 0;">
+                        style="color: var(--text-muted); font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px; margin: 0; font-weight: bold;">
                         Live Feed</h3>
                     <p id="mining-status"
-                        style="color: var(--accent-color); font-weight: bold; margin: 0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">
+                        style="color: var(--success-color); font-weight: bold; margin: 0; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; border: 1px solid var(--success-color); padding: 4px 10px; border-radius: 20px;">
                         Ready</p>
                 </div>
 
                 <div
-                    style="background: rgba(0,0,0,0.15); padding: var(--spacing-md); border-radius: var(--border-radius); border: 1px solid var(--border-color); flex: 1; display: flex; flex-direction: column;">
+                    style="background: #111; padding: var(--spacing-md); border-radius: var(--border-radius); border: 2px solid var(--border-color); flex: 1; display: flex; flex-direction: column; overflow: hidden; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
                     <div
-                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
-                        <span style="color: var(--text-muted); font-size: 0.9rem;">Current Nonce</span>
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+                        <span style="color: var(--text-muted); font-size: 1rem; letter-spacing: 1px;">Current Nonce</span>
                         <span id="live-nonce"
-                            style="font-weight: bold; color: var(--text-main); font-family: monospace; font-size: 1.1rem;">0</span>
+                            style="font-weight: bold; color: var(--text-main); font-family: 'Courier New', Courier, monospace; font-size: 1.3rem;">0</span>
                     </div>
                     <div
-                        style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+                        style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;">
                         Current Hash</div>
                     <div id="hash-output" style="
-                        font-family: monospace; 
+                        font-family: 'Courier New', Courier, monospace; 
                         word-break: break-all; 
                         color: var(--accent-color);
-                        font-size: 0.9rem;
-                        line-height: 1.5;
+                        font-size: 1rem;
+                        line-height: 1.6;
                         flex: 1;
-                        opacity: 0.8;
+                        text-shadow: 0 0 5px rgba(143, 211, 255, 0.3);
                     ">Waiting to start mining operations...</div>
                 </div>
             </div>

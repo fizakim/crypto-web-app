@@ -1,104 +1,224 @@
+const TradingPage = {
+    config: {
+        walletInfoUrl: '',
+        transferUrl: '',
+        isAuthenticated: false
+    },
 
-document.addEventListener('DOMContentLoaded', function () {
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    init(config) {
+        this.config = { ...this.config, ...config };
 
-    document.getElementById('receiver-hash').addEventListener('input', function (e) {
-        const val = e.target.value;
-        document.getElementById('receiver-hash-display').innerText = val ? val : '---';
-        if (val.length > 5) {
-            document.getElementById('receiver-status').innerText = 'Validating...';
-            setTimeout(() => {
-                document.getElementById('receiver-status').innerText = 'Address Identified';
-                document.getElementById('receiver-status').style.color = '#4ade80';
-            }, 500);
-        } else {
-            document.getElementById('receiver-status').innerText = 'Pending Address...';
-            document.getElementById('receiver-status').style.color = '#ffffff';
-        }
-    });
+        this.elements = {
+            form: document.getElementById('transfer-form'),
+            csrfToken: document.querySelector('[name=csrfmiddlewaretoken]'),
+            coinType: document.getElementById('coin-type'),
+            receiverHash: document.getElementById('receiver-hash'),
+            sendAmount: document.getElementById('send-amount'),
+            submitBtn: document.getElementById('btn-submit-transfer'),
+            messageBox: document.getElementById('transfer-message'),
+            senderHash: document.getElementById('sender-hash'),
+            senderBalance: document.getElementById('sender-balance'),
+            receiverStatus: document.getElementById('receiver-status'),
+            receiverHashDisplay: document.getElementById('receiver-hash-display'),
+            receiverExpectedAmount: document.getElementById('receiver-expected-amount')
+        };
 
-    document.getElementById('send-amount').addEventListener('input', function (e) {
-        const amount = parseFloat(e.target.value) || 0;
-        const coinType = document.getElementById('coin-type').value || '';
-        document.getElementById('receiver-expected-amount').innerText = amount.toFixed(4) + ' ' + coinType;
-    });
-
-    document.getElementById('coin-type').addEventListener('change', function (e) {
-        const amount = parseFloat(document.getElementById('send-amount').value) || 0;
-        const coinType = e.target.value;
-        document.getElementById('receiver-expected-amount').innerText = amount.toFixed(4) + ' ' + coinType;
-
-        if (coinType) {
-            document.getElementById('sender-hash').innerText = 'Fetching...';
-            document.getElementById('sender-balance').innerText = '...';
-
-            fetch(`/crypto/api/wallet/info/?network=${coinType}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.error) {
-                        alert(data.error);
-                        document.getElementById('sender-hash').innerText = 'Error';
-                        document.getElementById('sender-balance').innerText = '---';
-                    } else {
-                        document.getElementById('sender-hash').innerText = data.address;
-                        document.getElementById('sender-balance').innerText = parseFloat(data.balance).toFixed(8);
-                    }
-                })
-                .catch(err => {
-                    console.error('Error fetching wallet info:', err);
-                });
-        }
-    });
-
-    document.getElementById('btn-submit-transfer').addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        const network = document.getElementById('coin-type').value;
-        const recipient_address = document.getElementById('receiver-hash').value.trim();
-        const amount = document.getElementById('send-amount').value;
-
-        if (!network || !recipient_address || !amount || parseFloat(amount) <= 0) {
-            alert('Please fill out all fields with valid information.');
+        if (!this.elements.form) {
             return;
         }
 
-        this.disabled = true;
-        this.innerText = 'Sending...';
+        this.setupEventListeners();
+    },
 
-        fetch('/crypto/api/transfer/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            },
-            body: JSON.stringify({
-                network: network,
-                recipient_address: recipient_address,
-                amount: amount
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.error) {
-                alert(`Error: ${data.error}`);
-            } else {
-                alert('Transfer submitted successfully!');
-                document.getElementById('send-amount').value = '';
-                document.getElementById('receiver-hash').value = '';
-                document.getElementById('receiver-hash-display').innerText = '---';
-                document.getElementById('receiver-expected-amount').innerText = '0.00';
-                
-                // Refresh balance
-                document.getElementById('coin-type').dispatchEvent(new Event('change'));
+    setMessage(message, isError = false) {
+        const { messageBox } = this.elements;
+        if (!messageBox) {
+            return;
+        }
+
+        messageBox.textContent = message;
+        messageBox.classList.remove('msg-success', 'msg-error');
+        messageBox.classList.add(isError ? 'msg-error' : 'msg-success');
+        messageBox.style.display = 'block';
+
+        window.clearTimeout(this.messageTimer);
+        this.messageTimer = window.setTimeout(() => {
+            messageBox.style.display = 'none';
+        }, 5000);
+    },
+
+    updateStatusLabel(text, isValid) {
+        const el = this.elements.receiverStatus;
+        if (!el) {
+            return;
+        }
+        el.textContent = text;
+        el.classList.remove('status-valid', 'status-pending');
+        el.classList.add(isValid ? 'status-valid' : 'status-pending');
+    },
+
+    updateReceiverHashDisplay(value) {
+        const output = value || '---';
+        const el = this.elements.receiverHashDisplay;
+        if (el) {
+            el.textContent = output;
+        }
+    },
+
+    updateExpectedReceived() {
+        const amount = parseFloat(this.elements.sendAmount?.value || '0') || 0;
+        const coinType = this.elements.coinType?.value || '';
+        const value = `${amount.toFixed(4)}${coinType ? ` ${coinType}` : ''}`;
+
+        const el = this.elements.receiverExpectedAmount;
+        if (el) {
+            el.textContent = value;
+        }
+    },
+
+    async refreshWalletInfo() {
+        if (!this.config.isAuthenticated) {
+            return;
+        }
+
+        const symbol = this.elements.coinType?.value;
+        if (!symbol) {
+            if (this.elements.senderHash) {
+                this.elements.senderHash.textContent = 'Select a network to load wallet address';
             }
-        })
-        .catch(err => {
-            alert('An unexpected error occurred submitting the transfer.');
-            console.error(err);
-        })
-        .finally(() => {
-            this.disabled = false;
-            this.innerText = 'Send Coins';
+            if (this.elements.senderBalance) {
+                this.elements.senderBalance.textContent = '--';
+            }
+            return;
+        }
+
+        if (this.elements.senderHash) {
+            this.elements.senderHash.textContent = 'Fetching...';
+        }
+        if (this.elements.senderBalance) {
+            this.elements.senderBalance.textContent = '...';
+        }
+
+        try {
+            const response = await fetch(`${this.config.walletInfoUrl}?network=${encodeURIComponent(symbol)}`);
+            const data = await response.json();
+
+            if (!response.ok || data.error) {
+                throw new Error(data.error || 'Failed to load wallet info');
+            }
+
+            if (this.elements.senderHash) {
+                this.elements.senderHash.textContent = data.address;
+            }
+            if (this.elements.senderBalance) {
+                const balance = Number.parseFloat(data.balance);
+                this.elements.senderBalance.textContent = Number.isNaN(balance)
+                    ? '--'
+                    : `${balance.toFixed(8)} ${symbol}`;
+            }
+        } catch (error) {
+            if (this.elements.senderHash) {
+                this.elements.senderHash.textContent = 'Error loading wallet';
+            }
+            if (this.elements.senderBalance) {
+                this.elements.senderBalance.textContent = '--';
+            }
+            this.setMessage(error.message || 'Failed to load wallet info', true);
+        }
+    },
+
+    async submitTransfer() {
+        if (!this.config.isAuthenticated) {
+            this.setMessage('Please log in to submit transfers.', true);
+            return;
+        }
+
+        const network = this.elements.coinType?.value || '';
+        const recipientAddress = (this.elements.receiverHash?.value || '').trim();
+        const amount = this.elements.sendAmount?.value || '';
+
+        if (!network || !recipientAddress || !amount || parseFloat(amount) <= 0) {
+            this.setMessage('Please fill out all fields with valid values.', true);
+            return;
+        }
+
+        const submitBtn = this.elements.submitBtn;
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+        }
+
+        try {
+            const response = await fetch(this.config.transferUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.elements.csrfToken?.value || ''
+                },
+                body: JSON.stringify({
+                    network,
+                    recipient_address: recipientAddress,
+                    amount
+                })
+            });
+
+            const data = await response.json();
+            if (!response.ok || data.error) {
+                throw new Error(data.error || 'Transfer failed');
+            }
+
+            this.setMessage('Transfer submitted successfully.');
+            if (this.elements.sendAmount) {
+                this.elements.sendAmount.value = '';
+            }
+            if (this.elements.receiverHash) {
+                this.elements.receiverHash.value = '';
+            }
+            this.updateReceiverHashDisplay('');
+            this.updateStatusLabel('Pending Address...', false);
+            this.updateExpectedReceived();
+            await this.refreshWalletInfo();
+
+            window.setTimeout(() => {
+                window.location.reload();
+            }, 900);
+        } catch (error) {
+            this.setMessage(error.message || 'An unexpected error occurred.', true);
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Coins';
+            }
+        }
+    },
+
+    setupEventListeners() {
+        this.elements.receiverHash?.addEventListener('input', (event) => {
+            const value = event.target.value.trim();
+            this.updateReceiverHashDisplay(value);
+
+            if (value.length > 5) {
+                this.updateStatusLabel('Address Identified', true);
+            } else {
+                this.updateStatusLabel('Pending Address...', false);
+            }
         });
-    });
-});
+
+        this.elements.sendAmount?.addEventListener('input', () => {
+            this.updateExpectedReceived();
+        });
+
+        this.elements.coinType?.addEventListener('change', async () => {
+            this.updateExpectedReceived();
+            await this.refreshWalletInfo();
+        });
+
+        this.elements.form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            await this.submitTransfer();
+        });
+
+        this.updateExpectedReceived();
+        this.updateStatusLabel('Pending Address...', false);
+    }
+};

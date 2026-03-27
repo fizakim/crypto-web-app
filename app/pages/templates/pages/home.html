@@ -8,80 +8,103 @@
 {% endblock %}
 
 {% block content %}
-<div class="lobby-wrapper">
-    <div class="lobby-top-row">
-        <!-- Top Left: Chart -->
-        <div class="lobby-card">
-            <h2 class="lobby-card-title">Crypto chart</h2>
-            <div class="chart-container">
-                <canvas id="walletChart"></canvas>
-            </div>
-            <div class="chart-actions">
-                <span style="color: var(--text-muted); font-size: 0.9rem;">Showing {{ selected_period }} data</span>
-                <div class="period-btns">
-                    <a href="?period=24h" class="period-btn {% if selected_period == '24h' %}active{% endif %}">24h</a>
-                    <a href="?period=7d" class="period-btn {% if selected_period == '7d' %}active{% endif %}">7d</a>
-                    <a href="?period=30d" class="period-btn {% if selected_period == '30d' %}active{% endif %}">30d</a>
+<div class="container py-4 py-lg-5 home-page">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <h1 class="h3 mb-0">Home Page</h1>
+    </div>
+
+    <div class="row g-4 mb-4 align-items-stretch">
+        <div class="col-12 col-xl-8">
+            <section class="card h-100 home-card">
+                <div class="card-body p-3 p-md-4 d-flex flex-column">
+                    <h2 class="h5 mb-3">Crypto Chart</h2>
+                    <div class="chart-container flex-grow-1">
+                        <canvas id="walletChart"></canvas>
+                    </div>
+
+                    <div class="chart-actions mt-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <span class="small text-body-secondary">Showing {{ selected_period_label }} data</span>
+                        <div class="btn-group period-btns" role="group" aria-label="Select period">
+                            <a href="?period=24h" class="btn btn-sm period-btn {% if selected_period == '24h' %}active{% endif %}">24h</a>
+                            <a href="?period=7d" class="btn btn-sm period-btn {% if selected_period == '7d' %}active{% endif %}">7d</a>
+                            <a href="?period=30d" class="btn btn-sm period-btn {% if selected_period == '30d' %}active{% endif %}">30d</a>
+                            <a href="?period=all" class="btn btn-sm period-btn {% if selected_period == 'all' %}active{% endif %}">All Time</a>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </section>
         </div>
 
-        <!-- Top Right: Stats -->
-        <div class="lobby-card stats-card">
-            <h2 class="lobby-card-title" style="align-self: flex-start; width: 100%; text-align: left;">Crypto stats</h2>
-            
-            <div class="wallet-display">
-                <div class="wallet-label">Wallet Value</div>
-                <h1>£{{ wallet_value }}</h1>
-                <div class="wallet-change {% if wallet_change_percent >= 0 %}text-success{% else %}text-danger{% endif %}">
-                    {% if wallet_change_percent > 0 %}+{% endif %}{{ wallet_change_percent }}% ({{ selected_period }})
+        <div class="col-12 col-xl-4">
+            <section class="card h-100 home-card">
+                <div class="card-body p-3 p-md-4 d-flex flex-column gap-3">
+                    <h2 class="h5 mb-1">Crypto Stats</h2>
+
+                    <div class="wallet-display text-center">
+                        <div class="wallet-label text-body-secondary small text-uppercase">Wallet Value</div>
+                        <h3 class="display-6 mb-1">&pound;{{ wallet_value }}</h3>
+                        {% if wallet_change_percent != 0 %}
+                        <div class="wallet-change {% if wallet_change_percent >= 0 %}text-success{% else %}text-danger{% endif %}">
+                            {% if wallet_change_percent > 0 %}+{% endif %}{{ wallet_change_percent }}% ({{ selected_period_label }})
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="earnings-box">
+                        <h3 class="h6 mb-1">Investment Earnings</h3>
+                        <div class="earnings-val">
+                            &pound;{{ investment_earnings }}
+                            <span class="small text-body-secondary fw-normal">/ {{ selected_period_label }}</span>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 action-links mt-auto">
+                        <a href="{% url 'users:account_overview' %}" class="btn btn-outline-light">Account Overview</a>
+                    </div>
                 </div>
-            </div>
-
-            <div class="earnings-box">
-                <h3>Investment Earnings</h3>
-                <div class="earnings-val">£{{ investment_earnings }} <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">/ {{ selected_period }}</span></div>
-            </div>
-
-            <div class="action-links">
-                <a href="{% url 'users:account_overview' %}">Account Overview</a>
-                <a href="{% url 'exchange:exchange' %}">Exchange Page</a>
-            </div>
+            </section>
         </div>
     </div>
 
-    <!-- Bottom: Holdings -->
-    <div class="lobby-card">
-        <h2 class="lobby-card-title">Money in various cryptocurrencies</h2>
-        <div class="holdings-grid">
-            <div class="holdings-col">
-                <h3>Largest Holdings</h3>
-                <ul class="modern-list">
-                    {% for holding in largest_holdings %}
-                        <li>
-                            <span class="holding-symbol">{{ holding.symbol }}</span> 
-                            <span class="holding-amount">{{ holding.amount }}</span>
-                        </li>
-                    {% empty %}
-                        <div class="empty-note">No portfolio data yet</div>
-                    {% endfor %}
-                </ul>
+    <section class="card home-card">
+        <div class="card-body p-0">
+            <div class="px-3 px-md-4 py-3 border-bottom border-secondary-subtle">
+                <h2 class="h5 mb-0">Cryptocurrency Performance</h2>
             </div>
-            <div class="holdings-col">
-                <h3>Smallest Holdings</h3>
-                <ul class="modern-list">
-                    {% for holding in smallest_holdings %}
-                        <li>
-                            <span class="holding-symbol">{{ holding.symbol }}</span> 
-                            <span class="holding-amount">{{ holding.amount }}</span>
-                        </li>
-                    {% empty %}
-                        <div class="empty-note">No portfolio data yet</div>
-                    {% endfor %}
-                </ul>
+
+            <div class="table-responsive holdings-table-wrapper">
+                <table class="table align-middle table-hover mb-0 modern-table">
+                    <thead>
+                        <tr>
+                            <th>Asset</th>
+                            <th>Holdings</th>
+                            <th>Last Traded Price</th>
+                            <th class="text-end">Total Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for holding in holdings %}
+                        <tr>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="holding-symbol">{{ holding.symbol }}</span>
+                                    <span class="small text-body-secondary">{{ holding.name }}</span>
+                                </div>
+                            </td>
+                            <td><span class="holding-amount">{{ holding.amount }}</span></td>
+                            <td><span class="holding-price">&pound;{{ holding.price|floatformat:2 }}</span></td>
+                            <td class="text-end fw-semibold">&pound;{{ holding.value_gbp|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="empty-note text-center">No cryptocurrency data available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
+    </section>
 </div>
 
 {{ chart_labels|json_script:"chart-labels" }}
@@ -89,6 +112,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{% static 'pages/js/home.js' %}"></script>
 {% endblock %}

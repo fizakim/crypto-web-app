@@ -1,165 +1,225 @@
-.trading-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: stretch;
-    gap: 30px;
-    width: 90%;
-    max-width: var(--container-width);
-    margin: 20px auto;
-    font-family: inherit;
-    color: var(--text-main);
+.trading-page .trading-card {
+    border-color: var(--border-color);
 }
 
-@media (max-width: 900px) {
-    .trading-container {
-        flex-direction: column;
-    }
-}
-
-.trading-card {
-    flex: 1;
-    background-color: var(--bg-card);
-    border: 1px solid gray;
-    border-radius: var(--border-radius, 10px);
-    padding: 24px;
-    box-shadow: 2px 2px 8px black;
+.trading-page .stat-block {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    min-height: 400px;
+    gap: 0.45rem;
 }
 
-.trading-card h3 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 20px;
-    font-weight: bold;
-    border-bottom: 1px solid gray;
-    padding-bottom: 10px;
-    text-align: center;
-}
-
-.user-stats {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.stat-item {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.stat-label {
-    font-size: 14px;
+.trading-page .stat-label {
+    font-size: 0.78rem;
     color: var(--text-muted);
-    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
-.stat-value {
-    font-size: 16px;
-    color: var(--text-main);
-    padding: 12px;
-    background-color: #2d2d2d;
-    border-radius: 5px;
+.trading-page .stat-value {
+    padding: 0.75rem 0.85rem;
     border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    font-size: 0.95rem;
+    font-weight: 600;
     word-break: break-all;
 }
 
-.stat-value.balance-highlight {
-    font-size: 24px;
-    font-weight: bold;
-    color: lightgreen;
-    text-align: center;
-    background-color: var(--bg-card-alt);
-    border: 2px solid lightblue;
-    border-radius: 10px;
+.trading-page .mono {
+    font-family: "Consolas", "SFMono-Regular", "Menlo", monospace;
 }
 
-.controls-column {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    padding: 10px 0;
+.trading-page .balance-highlight {
+    border-color: rgba(141, 207, 111, 0.6);
+    background-color: rgba(141, 207, 111, 0.12);
+    color: var(--success-color);
+    font-size: 1.1rem;
 }
 
-.control-group {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+.trading-page .sender-fiat {
+    border-color: rgba(255, 179, 71, 0.6);
+    background-color: rgba(255, 179, 71, 0.1);
+    color: var(--accent-color);
+    font-weight: 700;
 }
 
-.control-group label {
-    font-size: 14px;
+.trading-page .sender-balance {
+    font-size: 1.02rem;
+}
+
+.trading-page .form-select,
+.trading-page .form-control {
+    background-color: var(--bg-input);
+    border-color: var(--border-color);
+    color: var(--text-main);
+    font-size: 0.96rem;
+    line-height: 1.35;
+    padding: 0.62rem 0.82rem;
+}
+
+.trading-page .form-label {
     color: var(--text-muted);
+    font-size: 0.83rem;
     font-weight: 600;
-    text-align: left;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.42rem;
 }
 
-.control-input {
-    width: 100%;
-    padding: 10px 15px;
-    font-size: 16px;
-    background-color: #2d2d2d;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
+.trading-page .form-control::placeholder {
+    color: #a9a394;
+    opacity: 1;
+}
+
+.trading-page .form-select option {
+    background-color: var(--bg-input);
     color: var(--text-main);
 }
 
-.control-input:focus {
-    outline: none;
-    border-color: lightblue;
+.trading-page .form-select:focus,
+.trading-page .form-control:focus {
+    border-color: rgba(255, 179, 71, 0.75);
+    box-shadow: 0 0 0 0.2rem rgba(255, 179, 71, 0.2);
+    background-color: var(--bg-input);
+    color: var(--text-main);
 }
 
-.control-input::placeholder {
-    color: #888;
+.trading-page .form-select:disabled,
+.trading-page .form-control:disabled {
+    opacity: 0.7;
 }
 
-.transfer-arrow {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.trading-page .transfer-arrow {
     width: 100%;
-    height: 40px;
-    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0.1rem 0 0.15rem;
 }
 
-.transfer-arrow-line {
-    flex-grow: 1;
+.trading-page .transfer-arrow-line {
+    flex: 1;
     height: 2px;
-    background-color: lightblue;
+    background: linear-gradient(90deg, rgba(255, 179, 71, 0.2) 0%, rgba(255, 179, 71, 0.8) 100%);
 }
 
-.transfer-arrow-head {
+.trading-page .transfer-arrow-head {
     width: 0;
     height: 0;
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-    border-left: 15px solid lightblue;
-    margin-left: -2px;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 11px solid rgba(255, 179, 71, 0.9);
 }
 
-.btn-send {
-    width: 100%;
-    padding: 12px 20px;
-    font-size: 18px;
-    font-weight: bold;
-    color: black;
-    background-color: lightblue;
-    border: 2px solid lightblue;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 15px;
-    transition: background-color 0.2s, color 0.2s;
+.trading-page .stat-value.status-valid {
+    color: var(--success-color);
+    border-color: rgba(141, 207, 111, 0.6);
 }
 
-.btn-send:hover {
-    background-color: transparent;
-    color: lightblue;
+.trading-page .stat-value.status-pending {
+    color: var(--text-main);
+}
+
+.trading-page .btn-send {
+    border: 1px solid rgba(255, 179, 71, 0.85);
+    background-color: var(--accent-color);
+    color: #26282d;
+    font-weight: 700;
+}
+
+.trading-page .btn-send:hover,
+.trading-page .btn-send:focus {
+    background-color: #ffca74;
+    color: #26282d;
+}
+
+.trading-page .btn-send:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.trading-page #transfer-message {
+    padding: 0.75rem 0.9rem;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    display: none;
+    font-weight: 600;
+}
+
+.trading-page .msg-success {
+    background: rgba(141, 207, 111, 0.15);
+    border: 1px solid rgba(141, 207, 111, 0.65);
+    color: var(--success-color);
+}
+
+.trading-page .msg-error {
+    background: rgba(242, 125, 114, 0.15);
+    border: 1px solid rgba(242, 125, 114, 0.68);
+    color: var(--danger-color);
+}
+
+.trading-page .modern-table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text-main);
+    --bs-table-border-color: #575b63;
+    --bs-table-hover-color: var(--text-main);
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.03);
+}
+
+.trading-page .modern-table thead th {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom-width: 1px;
+}
+
+.trading-page .modern-table td,
+.trading-page .modern-table th {
+    padding: 0.8rem 1rem;
+}
+
+.trading-page .pending-wide-card .modern-table td,
+.trading-page .pending-wide-card .modern-table th {
+    padding-top: 0.82rem;
+    padding-bottom: 0.82rem;
+}
+
+.trading-page .status-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 26px;
+    padding: 0.1rem 0.65rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 179, 71, 0.65);
+    background-color: rgba(255, 179, 71, 0.14);
+    color: var(--accent-color);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.trading-page .empty-note {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+@media (max-width: 1199.98px) {
+    .trading-page .stat-value {
+        font-size: 0.92rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .trading-page .modern-table td,
+    .trading-page .modern-table th {
+        padding: 0.65rem 0.7rem;
+        font-size: 0.86rem;
+    }
+
+    .trading-page .balance-highlight {
+        font-size: 1rem;
+    }
 }

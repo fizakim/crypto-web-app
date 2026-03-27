@@ -13,11 +13,13 @@ class ExchangeView(TemplateView):
         context = super().get_context_data(**kwargs)
         cryptos = get_all_networks()
         context['cryptocurrencies'] = cryptos
-        selected_crypto_symbol = self.request.GET.get('network')
+        # see which crypto the user has selected from the dropdown
+        selected_crypto = self.request.GET.get('network')
         
-        if selected_crypto_symbol:
-            active_crypto = cryptos.filter(symbol=selected_crypto_symbol).first()
+        if selected_crypto:
+            active_crypto = cryptos.filter(symbol=selected_crypto).first()
         else:
+            # default to first one if nothing selected
             active_crypto = cryptos.first() if cryptos.exists() else None
             
         context['active_crypto'] = active_crypto
@@ -28,6 +30,7 @@ class ExchangeView(TemplateView):
             else:
                 context['crypto_balance'] = 0
                 
+            # list open orders so the user can cancel them
             context['open_orders'] = Order.objects.filter(
                 user=self.request.user, 
                 status='open'
@@ -48,8 +51,15 @@ def place_order_api(request):
         price = data.get('price')
         amount = data.get('amount')
         
-        if not all([symbol, order_type, price, amount]):
-            return JsonResponse({'error': 'Missing fields'}, status=400)
+        # make sure we have all the data we need
+        if not symbol:
+            return JsonResponse({'error': 'Missing network'}, status=400)
+        if not order_type:
+            return JsonResponse({'error': 'Missing order type'}, status=400)
+        if not price:
+            return JsonResponse({'error': 'Missing price'}, status=400)
+        if not amount:
+            return JsonResponse({'error': 'Missing amount'}, status=400)
             
         from crypto.models import Cryptocurrency
         crypto = Cryptocurrency.objects.get(symbol=symbol)
@@ -63,6 +73,7 @@ def place_order_api(request):
             'order_status': order.status
         })
     except Exception as e:
+        # something went wrong
         return JsonResponse({'error': str(e)}, status=400)
 
 def cancel_order_api(request, order_id):

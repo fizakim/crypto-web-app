@@ -1,0 +1,237 @@
+.exchange-page .exchange-card {
+    border-color: var(--border-color);
+}
+
+.exchange-page .network-select {
+    min-width: 240px;
+    background-color: var(--bg-input);
+    border-color: var(--border-color);
+    color: var(--text-main);
+}
+
+.exchange-page .network-select:focus {
+    border-color: rgba(255, 179, 71, 0.75);
+    box-shadow: 0 0 0 0.2rem rgba(255, 179, 71, 0.2);
+}
+
+.exchange-page .market-stats {
+    max-width: 100%;
+}
+
+.exchange-page .stat-chip {
+    min-width: 150px;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background-color: var(--bg-card);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.exchange-page .stat-chip-label {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.exchange-page .stat-chip-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1.25;
+}
+
+.exchange-page .stat-chip-value-price {
+    color: var(--success-color);
+}
+
+.exchange-page .order-book-table-wrapper {
+    flex: 1;
+}
+
+.exchange-page .modern-table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text-main);
+    --bs-table-border-color: #575b63;
+    --bs-table-hover-color: var(--text-main);
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.03);
+}
+
+.exchange-page .modern-table thead th {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom-width: 1px;
+}
+
+.exchange-page .modern-table td,
+.exchange-page .modern-table th {
+    padding: 0.75rem 1rem;
+}
+
+.exchange-page .order-book-table td,
+.exchange-page .order-book-table th {
+    text-align: right;
+}
+
+.exchange-page .order-book-table td:first-child,
+.exchange-page .order-book-table th:first-child {
+    text-align: left;
+}
+
+.exchange-page .spread-row {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.exchange-page .ask-row {
+    color: var(--danger-color);
+}
+
+.exchange-page .bid-row {
+    color: var(--success-color);
+}
+
+.exchange-page .order-type-toggle {
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.exchange-page .order-type-toggle .type-btn {
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-input);
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.exchange-page .order-type-toggle .type-btn:hover,
+.exchange-page .order-type-toggle .type-btn:focus {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.exchange-page .order-type-toggle .type-btn.active[data-type="bid"] {
+    background-color: rgba(141, 207, 111, 0.22);
+    border-color: rgba(141, 207, 111, 0.75);
+    color: var(--success-color);
+}
+
+.exchange-page .order-type-toggle .type-btn.active[data-type="ask"] {
+    background-color: rgba(242, 125, 114, 0.2);
+    border-color: rgba(242, 125, 114, 0.75);
+    color: var(--danger-color);
+}
+
+.exchange-page .form-control {
+    background-color: var(--bg-input);
+    border-color: var(--border-color);
+    color: var(--text-main);
+}
+
+.exchange-page .form-control:focus {
+    border-color: rgba(255, 179, 71, 0.75);
+    box-shadow: 0 0 0 0.2rem rgba(255, 179, 71, 0.2);
+    background-color: var(--bg-input);
+    color: var(--text-main);
+}
+
+.exchange-page .total-value {
+    font-size: 0.95rem;
+}
+
+.exchange-page .submit-order-btn {
+    font-weight: 700;
+    border-width: 1px;
+}
+
+.exchange-page .submit-order-btn.is-bid {
+    background-color: rgba(141, 207, 111, 0.9);
+    border-color: rgba(141, 207, 111, 0.95);
+    color: #23252a;
+}
+
+.exchange-page .submit-order-btn.is-bid:hover,
+.exchange-page .submit-order-btn.is-bid:focus {
+    background-color: rgba(141, 207, 111, 1);
+    color: #1c1d20;
+}
+
+.exchange-page .submit-order-btn.is-ask {
+    background-color: rgba(242, 125, 114, 0.9);
+    border-color: rgba(242, 125, 114, 0.95);
+    color: #ffffff;
+}
+
+.exchange-page .submit-order-btn.is-ask:hover,
+.exchange-page .submit-order-btn.is-ask:focus {
+    background-color: rgba(242, 125, 114, 1);
+    color: #ffffff;
+}
+
+.exchange-page .btn-cancel {
+    min-width: 78px;
+}
+
+.exchange-page #message-box {
+    padding: 0.75rem 0.9rem;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    display: none;
+    font-weight: 600;
+}
+
+.exchange-page .msg-success {
+    background: rgba(141, 207, 111, 0.15);
+    border: 1px solid rgba(141, 207, 111, 0.65);
+    color: var(--success-color);
+}
+
+.exchange-page .msg-error {
+    background: rgba(242, 125, 114, 0.15);
+    border: 1px solid rgba(242, 125, 114, 0.68);
+    color: var(--danger-color);
+}
+
+.exchange-page .empty-note {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+@media (max-width: 991.98px) {
+    .exchange-page .market-stats {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .exchange-page .stat-chip {
+        flex: 1 1 180px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .exchange-page .network-select {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .exchange-page .network-form {
+        width: 100%;
+    }
+
+    .exchange-page .network-form label {
+        width: 100%;
+    }
+
+    .exchange-page .order-type-toggle .type-btn {
+        font-size: 0.85rem;
+    }
+
+    .exchange-page .modern-table td,
+    .exchange-page .modern-table th {
+        padding: 0.65rem 0.7rem;
+        font-size: 0.86rem;
+    }
+}
